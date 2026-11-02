@@ -1055,6 +1055,7 @@ const Audio = {
   init() {
     if (this.ctx) { if (this.ctx.state !== 'running') this.ctx.resume(); return; }
     const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { } // iPhone: suona anche con il tasto silenzioso
     const ctx = this.ctx = new AC();
     const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(ctx.destination);
     this.master = ctx.createGain(); this.master.gain.value = .9; this.master.connect(comp);
@@ -1076,13 +1077,15 @@ const Audio = {
   async loadSong(id) {
     if (!this.ctx || this.songBuf[id] || this.songLoading[id] || !SONGS[id]) return this.songLoading[id];
     this.songLoading[id] = (async () => {
-      try { const ab = await fetchBuf(ASSETS.songs[id]); this.songBuf[id] = await this.decode(ab); }
+      try { const ab = await fetchBuf(ASSETS.songs[id]); this.songBuf[id] = await this.decode(ab);
+        for (const k in this.songBuf) if (k !== id && k !== this.songId && k !== MENU_SONG) delete this.songBuf[k]; } // libera la memoria
       catch (e) { console.warn('canzone non caricata', id, e); }
       this.songLoading[id] = null;
     })();
     return this.songLoading[id];
   },
-  async preloadSongs() { const order = [Game.wantSong || MENU_SONG].concat(Object.keys(SONGS)); for (const id of order) { if (SONGS[id]) await this.loadSong(id); } },
+  /* carica solo la canzone che serve adesso: tenerle tutte decodificate in memoria fa bloccare l'iPhone */
+  async preloadSongs() { await this.loadSong(Game.wantSong || MENU_SONG); },
   /* fa partire la canzone e aggancia l'orologio di gioco ai suoi battiti */
   playSong(id) {
     if (!this.ctx || !SONGS[id]) return false;
