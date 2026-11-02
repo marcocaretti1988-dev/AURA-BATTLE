@@ -1,0 +1,34 @@
+; Aura Battle - progetto Godot 4.3+ (renderer Mobile)
+config_version=5
+
+[application]
+
+config/name="Aura Battle"
+run/main_scene="res://scenes/menu.tscn"
+config/features=PackedStringArray("4.3", "Mobile")
+config/icon="res://assets/ui/icon.png"
+
+[autoload]
+
+GameData="*res://scripts/game_data.gd"
+
+[audio]
+
+general/text_to_speech=true
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=4
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true

@@ -1,0 +1,341 @@
+{
+ "titan": {
+  "id": "titan",
+  "name": "RED TITAN",
+  "color": "#ff3366",
+  "glow": [
+   255,
+   132,
+   163
+  ],
+  "desc": "Canotta rossa, cresta biondissima e muscoli da carro armato.",
+  "style": "Hip hop pesante, squat e groove potenti. Aura ROSSA.",
+  "special": "TITAN QUAKE",
+  "prefs": {
+   "dance": 3,
+   "gesture": 2.2,
+   "walk": 1,
+   "mewing": 2,
+   "aura": 2.2,
+   "celebrate": 0.9
+  },
+  "anims": {
+   "idle": [
+    [
+     "OMG_Groove",
+     0.55
+    ]
+   ],
+   "entrance": [
+    [
+     "Walking",
+     1
+    ]
+   ],
+   "dance": [
+    [
+     "Hip_Hop_Dance_1",
+     1
+    ],
+    [
+     "Gangnam_Groove",
+     1
+    ],
+    [
+     "Cardio_Dance",
+     1
+    ]
+   ],
+   "sixseven": [
+    [
+     "Shake_It_Off_Dance",
+     1
+    ]
+   ],
+   "funny": [
+    [
+     "FunnyDancing_01",
+     1
+    ],
+    [
+     "FunnyDancing_02",
+     1
+    ]
+   ],
+   "walk": [
+    [
+     "Walking",
+     1
+    ]
+   ],
+   "mewing": [
+    [
+     "Squat_Stance",
+     0.9
+    ]
+   ],
+   "aura": [
+    [
+     "Superlove_Pop_Dance",
+     1
+    ],
+    [
+     "FunnyDancing_03",
+     1.1
+    ]
+   ],
+   "win": [
+    [
+     "Gangnam_Groove",
+     1
+    ],
+    [
+     "Cardio_Dance",
+     1
+    ]
+   ],
+   "lose": [
+    [
+     "Walking",
+     0.45
+    ]
+   ],
+   "menu": [
+    [
+     "OMG_Groove",
+     0.9
+    ],
+    [
+     "Hip_Hop_Dance_1",
+     0.9
+    ]
+   ]
+  }
+ },
+ "muse": {
+  "id": "muse",
+  "name": "STARDUST MUSE",
+  "color": "#4d8dff",
+  "glow": [
+   148,
+   186,
+   255
+  ],
+  "desc": "Capelli blu, zeppe giganti e polvere di stelle in tasca.",
+  "style": "Pop, magia e pose da diva. Aura BLU.",
+  "special": "STARDUST NOVA",
+  "prefs": {
+   "dance": 2.6,
+   "gesture": 2.6,
+   "walk": 1.4,
+   "mewing": 1.6,
+   "aura": 2.6,
+   "celebrate": 1
+  },
+  "anims": {
+   "idle": [
+    [
+     "You_Groove",
+     0.6
+    ]
+   ],
+   "entrance": [
+    [
+     "Walking",
+     1
+    ]
+   ],
+   "dance": [
+    [
+     "Pop_Dance_LSA2",
+     1
+    ],
+    [
+     "Gangnam_Groove",
+     1
+    ],
+    [
+     "OMG_Groove",
+     1
+    ]
+   ],
+   "sixseven": [
+    [
+     "Dont_You_Dare",
+     1
+    ]
+   ],
+   "funny": [
+    [
+     "ymca_dance",
+     1
+    ],
+    [
+     "FunnyDancing_02",
+     1
+    ]
+   ],
+   "walk": [
+    [
+     "Walking",
+     1
+    ]
+   ],
+   "mewing": [
+    [
+     "Squat_Stance",
+     0.9
+    ]
+   ],
+   "aura": [
+    [
+     "Magic_Genie",
+     1
+    ],
+    [
+     "Crystal_Beads",
+     1
+    ]
+   ],
+   "win": [
+    [
+     "ymca_dance",
+     1
+    ],
+    [
+     "FunnyDancing_03",
+     1
+    ]
+   ],
+   "lose": [
+    [
+     "Walking",
+     0.45
+    ]
+   ],
+   "menu": [
+    [
+     "You_Groove",
+     0.9
+    ],
+    [
+     "Pop_Dance_LSA2",
+     0.9
+    ]
+   ]
+  }
+ },
+ "warlord": {
+  "id": "warlord",
+  "name": "STEPPE WARLORD",
+  "color": "#c8843c",
+  "glow": [
+   222,
+   181,
+   138
+  ],
+  "desc": "Colbacco di pelliccia, armatura borchiata e baffi leggendari: viene dalla steppa.",
+  "style": "Danze di guerra, Gangnam e braccia a mulino. Aura BRONZO.",
+  "special": "HORDE STAMPEDE",
+  "prefs": {
+   "dance": 3,
+   "gesture": 2.2,
+   "walk": 1,
+   "mewing": 2,
+   "aura": 2.4,
+   "celebrate": 0.9
+  },
+  "anims": {
+   "idle": [
+    [
+     "OMG_Groove",
+     0.55
+    ]
+   ],
+   "entrance": [
+    [
+     "Walking",
+     1
+    ]
+   ],
+   "dance": [
+    [
+     "Gangnam_Groove",
+     1
+    ],
+    [
+     "Bubble_Dance",
+     1
+    ],
+    [
+     "OMG_Groove",
+     1
+    ]
+   ],
+   "sixseven": [
+    [
+     "Dont_You_Dare",
+     1
+    ]
+   ],
+   "funny": [
+    [
+     "FunnyDancing_02",
+     1
+    ],
+    [
+     "Indoor_Swing",
+     1
+    ]
+   ],
+   "walk": [
+    [
+     "Walking",
+     1
+    ]
+   ],
+   "mewing": [
+    [
+     "Squat_Stance",
+     0.9
+    ]
+   ],
+   "aura": [
+    [
+     "Arm_Circle_Shuffle",
+     1.1
+    ],
+    [
+     "Crystal_Beads",
+     1
+    ]
+   ],
+   "win": [
+    [
+     "Gangnam_Groove",
+     1
+    ],
+    [
+     "Bubble_Dance",
+     1
+    ]
+   ],
+   "lose": [
+    [
+     "Walking",
+     0.45
+    ]
+   ],
+   "menu": [
+    [
+     "OMG_Groove",
+     0.9
+    ],
+    [
+     "Indoor_Swing",
+     0.9
+    ]
+   ]
+  }
+ }
+}
