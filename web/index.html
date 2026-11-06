@@ -49,6 +49,12 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
 .card{width:clamp(96px,15vw,170px);background:var(--panel);border:2px solid #3b2a6a;border-radius:8px;padding:8px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:0 0 0 2px #000}
 .cards.many{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 8px;-webkit-overflow-scrolling:touch}
 .cards.many .card{flex:none;scroll-snap-align:center}
+.card.locked img{filter:grayscale(1) brightness(.35)}
+.card.locked .nm{opacity:.6}
+.lock{color:#ffc83a;font-size:8px;margin:4px 0}
+.venue.locked img{filter:grayscale(1) brightness(.3)}
+.shake{animation:shk .35s}
+@keyframes shk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .card.sel{border-color:var(--c);box-shadow:0 0 0 2px #000,0 0 22px var(--c)}
 .card img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 12%;border-radius:4px;display:block;background:radial-gradient(circle at 50% 70%,color-mix(in srgb,var(--c) 30%,transparent),transparent 70%)}
 .card .nm{font-size:clamp(7px,1.1vw,10px);color:var(--c);margin:6px 0 4px;text-align:center}
@@ -124,9 +130,11 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
 /* panels */
 .panel{background:var(--panel);border:2px solid var(--edge);border-radius:10px;padding:16px 18px;box-shadow:0 0 0 2px #000,0 0 30px rgba(180,76,255,.3);max-width:min(560px,94vw);max-height:92%;overflow:auto;display:flex;flex-direction:column;align-items:center;touch-action:pan-y}
 .set{display:flex;justify-content:space-between;align-items:center;width:100%;gap:16px;margin:6px 0;font-size:10px}
+@media (orientation:landscape) and (max-height:520px){#sSettings .panel{display:grid;grid-template-columns:1fr 1fr;column-gap:22px;max-width:94vw;align-items:center} #sSettings h2,#sSettings .privLink,#sSettings .panel>.btn{grid-column:1/-1;justify-self:center} #sSettings .set{margin:3px 0;font-size:8px} #sSettings .set .btn{padding:6px 9px;font-size:8px}}
 .tog{min-width:90px}
 .res{font-size:10px;line-height:2;text-align:center}
 .big{font-size:22px;margin:6px 0;text-shadow:3px 3px 0 #000}
+.unl{color:#ffe03c;font-size:9px;margin:4px 0;animation:gradeIn .6s .3s both}
 .grade{font-size:46px;line-height:1;margin:4px 0 8px;text-shadow:4px 4px 0 #000,0 0 22px currentColor;animation:gradeIn .6s cubic-bezier(.2,1.6,.4,1)}
 @keyframes gradeIn{from{transform:scale(3) rotate(-12deg);opacity:0}}
 .win{color:var(--gold)}.lose{color:#7fb0ff}
@@ -142,7 +150,9 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
 #galTabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;justify-content:center}
 #galTabs .btn.sel{border-color:var(--gold)}
 #rotate{display:none}
-#loading{font-size:10px;color:var(--dim)}
+#loading{font-size:10px;color:var(--dim);text-align:center}
+.lbar{width:min(260px,60vw);height:8px;border:2px solid var(--edge);border-radius:6px;margin:6px auto 4px;overflow:hidden;background:rgba(0,0,0,.4)}
+.lbar i{display:block;height:100%;background:linear-gradient(90deg,#b44cff,#ffc83a);transition:width .2s}
 #sVS{position:absolute;inset:0;z-index:9;display:none;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at center,rgba(20,8,48,.55),rgba(4,2,12,.92))}
 #sVS.on{display:block}
 .vsSide{position:absolute;top:0;bottom:0;width:52%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
@@ -158,6 +168,15 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
 @keyframes vsPop{from{transform:scale(4) rotate(-20deg);opacity:0}} @keyframes vsFade{from{opacity:0}}
 #sVS.out .vsL{animation:vsOutL .35s ease-in both} #sVS.out .vsR{animation:vsOutR .35s ease-in both} #sVS.out .vsMid{animation:vsFadeOut .3s both}
 @keyframes vsOutL{to{transform:translateX(-110%)}} @keyframes vsOutR{to{transform:translateX(110%)}} @keyframes vsFadeOut{to{opacity:0}}
+#tutBox{position:absolute;left:50%;top:calc(var(--sat) + 22%);transform:translateX(-50%);width:min(560px,86vw);z-index:6;display:none;background:rgba(12,6,32,.9);border:2px solid #ffc83a;border-radius:10px;padding:10px 14px;text-align:center;font-size:clamp(8px,1.6vw,11px);line-height:1.6;box-shadow:0 0 24px rgba(255,200,58,.35)}
+#tutBox.on{display:block;animation:vsFade .4s both}
+#tutStep{color:#ffc83a;font-size:8px;margin-bottom:4px}
+#tutBox .btn{margin-top:8px;font-size:7px;padding:5px 9px;pointer-events:auto}
+@media (orientation:landscape) and (max-height:520px){#tutBox{top:calc(var(--sat) + 64px);padding:6px 10px;font-size:8px}}
+#calPad{width:150px;height:150px;margin:14px auto 8px;border-radius:50%;border:3px solid var(--edge);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation}
+#calDot{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#fff,#b44cff 60%,transparent 72%)}
+#calCount{font-size:12px;margin:4px 0}
+.privLink{display:block;margin-top:10px;color:var(--dim);font-size:8px}
 #err{position:absolute;bottom:4px;left:4px;font-size:8px;color:#f88;z-index:20;font-family:monospace;max-width:90vw}
 </style>
 </head>
@@ -187,6 +206,8 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
     </div>
   </div>
 </div>
+<!-- tutorial -->
+<div id="tutBox"><div id="tutStep">1 / 8</div><div id="tutText"></div><button class="btn small" id="tutSkip">SALTA TUTORIAL</button></div>
 <!-- touch pad -->
 <div id="pad">
   <div class="side" id="padL">
@@ -214,6 +235,8 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
     <button class="btn" data-go="chars">CHARACTERS</button>
     <button class="btn" data-go="settings">SETTINGS</button>
     <button class="btn" data-go="howto">HOW TO PLAY</button>
+    <button class="btn" data-go="tutorial">TUTORIAL</button>
+    <button class="btn" id="bLang">IT / EN</button>
   </div>
   <div id="loading">CARICAMENTO PERSONAGGI 3D...</div>
 </div>
@@ -251,7 +274,28 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
     <div class="set">PIAZZE <button class="btn small tog" id="tNight">NOTTE</button></div>
     <div class="set">DIFFICOLTA' <button class="btn small tog" id="tDiff">NORMAL</button></div>
     <div class="set">GUIDA AL RITMO <button class="btn small tog" id="tGuide">ON</button></div>
+    <div class="set">SINCRONIZZA AUDIO <button class="btn small tog" data-go="calib">CALIBRA</button></div>
+    <div class="set">LINGUA <button class="btn small tog" id="tLang">ITALIANO</button></div>
+    <a class="privLink" href="privacy.html" target="_blank" rel="noopener">PRIVACY</a>
     <button class="btn small" data-go="menu" style="margin-top:12px">&lt; MENU</button>
+  </div>
+</div>
+
+<!-- CALIBRAZIONE AUDIO -->
+<div class="screen dimbg" id="sCalib">
+  <div class="panel" style="text-align:center">
+    <h2>SINCRONIZZA AUDIO</h2>
+    <div class="help" style="text-align:center">Con le cuffie Bluetooth il suono arriva in ritardo: questa prova lo misura e corregge il tempo del gioco.<br><br>Tocca lo schermo (o premi SPAZIO) a tempo con il click, per 8 volte.</div>
+    <div id="calPad"><div id="calDot"></div></div>
+    <div id="calCount">0 / 8</div>
+    <div id="calRes" style="color:#ffc83a;min-height:14px"></div>
+    <div id="calCur" style="color:var(--dim);font-size:8px;margin-top:4px"></div>
+    <div class="row">
+      <button class="btn gold small" id="calStart">INIZIA</button>
+      <button class="btn gold small" id="calSave" style="display:none">SALVA</button>
+      <button class="btn small" id="calClear">AZZERA</button>
+      <button class="btn small" data-go="settings">&lt; SETTINGS</button>
+    </div>
   </div>
 </div>
 
@@ -300,6 +344,7 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
     <div class="res" id="rBody"></div>
     <div class="row">
       <button class="btn gold small" id="rNext">RIGIOCA</button>
+      <button class="btn small" id="rShare">&#10148; CONDIVIDI</button>
       <button class="btn small" id="rMenu">MENU</button>
     </div>
   </div>
@@ -386,6 +431,7 @@ const BASIC_MOVES = ['dance', 'gesture', 'walk', 'mewing', 'aura', 'celebrate'];
 
 /* ---------------- caricamento ---------------- */
 /* i data: URI si decodificano a mano (la pagina pubblicata non permette fetch di data:) */
+const LOADP = {}; // avanzamento del download di ogni file (0..1)
 async function fetchBuf(src) {
   if (src.startsWith('data:')) {
     const b64 = src.slice(src.indexOf(',') + 1), bin = atob(b64), u = new Uint8Array(bin.length);
@@ -393,18 +439,32 @@ async function fetchBuf(src) {
     return u.buffer;
   }
   const r = await fetch(src); if (!r.ok) throw new Error('HTTP ' + r.status);
-  if (/\.txt$/.test(src)) return fetchBuf('data:;base64,' + (await r.text()).trim());
-  return r.arrayBuffer();
+  // legge a pezzi per mostrare la percentuale di caricamento
+  let body;
+  const tot = +r.headers.get('content-length') || 0;
+  if (r.body && r.body.getReader && tot) {
+    const rd = r.body.getReader(), parts = []; let got = 0;
+    for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got += value.length; LOADP[src] = Math.min(1, got / tot); }
+    const u = new Uint8Array(got); let o = 0; for (const p of parts) { u.set(p, o); o += p.length; } body = u.buffer;
+  } else body = await r.arrayBuffer();
+  LOADP[src] = 1;
+  if (/\.txt$/.test(src)) return fetchBuf('data:;base64,' + new TextDecoder().decode(body).trim());
+  return body;
 }
 function loadImage(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('img')); i.src = src; }); }
 async function loadAssets() {
   $('logo').src = ASSETS.logo;
   if (R3.init()) {
     let n = 0;
+    const ids = CHAR_IDS.concat(CROWD_IDS).filter(id => ASSETS.models[id]);
+    const showP = () => { const f = ids.reduce((a, id) => a + (LOADP[ASSETS.models[id]] || (R3.models[id] || (R3.crowdSrc && R3.crowdSrc[id]) ? 1 : 0)), 0) / ids.length, pc = Math.round(f * 100);
+      $('loading').innerHTML = `<div class="lbar"><i style="width:${pc}%"></i></div>${T('CARICAMENTO')} ${pc}%`; };
+    const iv = setInterval(showP, 150); showP();
     R3.portraits = {}; for (const id of CHAR_IDS) { try { R3.portraits[id] = await loadImage(ASSETS.portraits[id]); } catch (e) { } }
     try { R3.logoImg = await loadImage(ASSETS.logo); } catch (e) { }
-    await Promise.all(CHAR_IDS.concat(CROWD_IDS).filter(id => ASSETS.models[id]).map(id => R3.load(id, ASSETS.models[id]).then(() => { n++; $('loading').textContent = 'CARICAMENTO 3D ' + n + '/' + (CHAR_IDS.length + CROWD_IDS.length); })
+    await Promise.all(CHAR_IDS.concat(CROWD_IDS).filter(id => ASSETS.models[id]).map(id => R3.load(id, ASSETS.models[id]).then(() => { n++; })
       .catch(e => { console.warn('modello non caricato', id, e); R3.err = (R3.err ? R3.err + ' | ' : '') + id + ': ' + (e && e.message || e); })));
+    clearInterval(iv);
   } else $('loading').textContent = 'MOTORE 3D NON DISPONIBILE: SERVE LA CONNESSIONE';
   for (const v of VENUE_IDS) { try { VIMG[v] = await loadImage(ASSETS.venues[v].img); VIMG_N[v] = ASSETS.venues[v].hd ? VIMG[v] : makeNight(VIMG[v], v); } catch (e) { console.warn('piazza mancante', v); } }
 }
@@ -964,6 +1024,13 @@ const R3 = {
       if (S.type === 'fly') { const u = Math.min(1, S.t / S.dur), e = 1 - Math.pow(1 - u, 3); z = 1.9 - .9 * e; cx = 320; cy = lerp(110, 200, e); }
       if (S.t >= S.dur) this.shotT = null;
     }
+    // telecamera sul ballerino: durante il turno si avvicina piano, e a ogni mossa fa un piccolo scatto a tempo
+    const dancing = live && Game.active && !Game.paused && (Game.state === 'free' || Game.state === 'challenge' || Game.phase === 'perform');
+    if (!S && dancing && fx !== undefined) {
+      const p = this.toScreen(fx, 1.05, fz), ramp = this.push = Math.min(1, (this.push || 0) + dt * .25);
+      z = 1 + .13 * ramp; cx = lerp(320, p.x, .65 * ramp); cy = lerp(200, p.y, .45 * ramp);
+    } else if (!dancing) this.push = Math.max(0, (this.push || 0) - dt * .8);
+    this.kick = (this.kick || 0) * Math.exp(-dt * 5); z *= 1 + this.kick * .065;
     const zz = this.zoom || (this.zoom = { z: 1, cx: 320, cy: 200 }), kk = 1 - Math.exp(-dt * 8);
     zz.z = lerp(zz.z, z * (1 + pulse * .006), kk); zz.cx = lerp(zz.cx, cx + Math.sin(beat * Math.PI / 2) * 3, kk); zz.cy = lerp(zz.cy, cy, kk);
   },
@@ -1309,7 +1376,7 @@ const Clock = {
   setBPM(bpm) { this.clearMap(); const b = this.beat(); this.anchorT = this.lastT; this.anchorB = b; this.bpm = bpm; this.beatLen = 60 / bpm; },
   /* errore (secondi) rispetto al beat più vicino */
   anchorTo(t, b, bpm) { this.now(); if (this.src !== 'ac') return; this.anchorT = t; this.anchorB = b; this.bpm = bpm; this.beatLen = 60 / bpm; },
-  lat() { const A = Audio.ctx; return A ? (A.outputLatency || A.baseLatency || 0) : 0; },
+  lat() { const c = store.get('audioOffset', null); if (c !== null) return c; const A = Audio.ctx; return A ? (A.outputLatency || A.baseLatency || 0) : 0; },
   /* errore (s) rispetto al battito più vicino, misurato su ciò che si sente davvero */
   err(b) { if (b === undefined) b = this.beatAt(this.now() - this.lat()); return (b - Math.round(b)) * this.beatLen; }
 };
@@ -1499,7 +1566,7 @@ function burst(x, y, col, n, spd, kind) {
     parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - spd * .4, life: rnd(.5, 1.2), max: 1.2, col, kind: kind || (Math.random() < .3 ? 'star' : 'sq'), sz: rnd(1, 3) }); }
 }
 function auraRise(x, y, col, n) { for (let i = 0; i < n; i++) parts.push({ x: x + rnd(-26, 26), y: y - rnd(0, 20), vx: rnd(-8, 8), vy: -rnd(40, 110), life: rnd(.5, 1.1), max: 1.1, col, kind: 'sq', sz: rnd(1, 2.5) }); }
-function popup(text, x, y, col, size, life) { if ((size || 12) >= 12 && /[A-Z]{3}/.test(text)) Game.ledMsg = { text, col, t: Game.t }; popups.push({ text, x, y, col, size: size || 12, life: life || 1.1, max: life || 1.1 }); }
+function popup(text, x, y, col, size, life) { text = T(text); if ((size || 12) >= 12 && /[A-Z]{3}/.test(text)) Game.ledMsg = { text, col, t: Game.t }; popups.push({ text, x, y, col, size: size || 12, life: life || 1.1, max: life || 1.1 }); }
 function ring(x, y, col) { rings.push({ x, y, r: 6, col, life: .8 }); }
 function doFlash(col, v) { flashCol = col; flash = Math.max(flash, v); }
 
@@ -1562,6 +1629,10 @@ function perform(p, moveId, errSec, opts) {
   } else if (moveId === 'celebrate') {
     Game.hype = clamp(Game.hype + (j.q >= 2 ? 8 : 2), 0, 100);
   }
+  // primi piani solo nei momenti speciali (al massimo uno ogni 3 secondi)
+  if (R3.ok && p === Game.active && !R3.shotT && moveId !== 'special' && moveId !== 'aura' && performance.now() - (R3.lastClose || 0) > 3000 &&
+      (clean === 2 || (opts.gold && j.q >= 2) || (j.q >= 1 && p.combo >= 6 && p.combo % 3 === 0))) { R3.lastClose = performance.now(); R3.shot('close', p, 1.3); }
+  if (R3.ok && p === Game.active) R3.kick = j.q >= 2 ? 1 : .5;
   if (opts.gold) { pts *= 3; tags.push('GOLD x3!'); }
   if (opts.double) { pts *= 2; tags.push('DOPPIA x2!'); }
   p.lastQ = j.q;
@@ -1593,7 +1664,7 @@ function perform(p, moveId, errSec, opts) {
     if (j.q >= 2) burst(fx, fy - 60, c, 10 + j.q * 6, 120);
     if (R3.ok) R3.fxRing(p, CHARS[p.id].glow); else ring(fx, fy, c);
     rivalReact(p, j.q);
-    if (moveId === 'special') Cine.start(p);
+    if (moveId === 'special') { Cine.start(p); if (p.isPlayer) Tutorial.ev('special'); }
     else if (moveId === 'aura' && R3.ok && p === Game.active) R3.shot('close', p, 1.3);
     if (j.q >= 3 && R3.ok) { R3.fxCircle(.7); R3.fxPhoto(p.combo >= 6 ? 2 : 1); }
     if (moveId === 'aura' || moveId === 'special') { auraRise(fx, fy, c, 40); doFlash(c, moveId === 'special' ? .55 : .25); Audio.aura(); }
@@ -1611,7 +1682,7 @@ function perform(p, moveId, errSec, opts) {
 }
 
 function speedUpFree() {
-  if (Game.state !== 'free') return; Game.freeHits = (Game.freeHits || 0) + 1;
+  if (Game.state !== 'free' || Tutorial.on) return; Game.freeHits = (Game.freeHits || 0) + 1;
   const l = Math.min(SPEED_STEP.length - 1, Math.floor(Game.freeHits / 10));
   if (l > (Game.freeLvl || 0)) { Game.freeLvl = l; banner('VELOCITA\' ' + (l + 1) + '!', '#2fe0e8'); Voice.say('Speed up!', true); Audio.combo(8); }
 }
@@ -1626,6 +1697,7 @@ function rivalReact(p, q) {
 /* COMBO: esegue in automatico le ultime 3 mosse diverse, a tempo */
 function doCombo(p) {
   if (p.charges <= 0) { popup('NO COMBO', p.sx, p.sy - 140, '#888', 10); return; }
+  if (p.isPlayer) Tutorial.ev('combo');
   const seq = []; for (let i = p.history.length - 1; i >= 0 && seq.length < 3; i--) { const m = p.history[i]; if (!seq.includes(m) && BASIC_MOVES.includes(m) && m !== 'celebrate') seq.push(m); }
   while (seq.length < 3) { const m = pick(['dance', 'gesture', 'walk', 'mewing'].filter(x => !seq.includes(x))); seq.push(m); }
   seq.reverse(); p.charges--;
@@ -1658,13 +1730,13 @@ function input(moveId) {
         n.got = n.got || {}; n.got[moveId] = hit.e; MoveBar.hit(moveId);
         if (n.got[n.m] !== undefined && n.got[n.m2] !== undefined) {
           n.state = 1; n.t = Game.t; const e = (n.got[n.m] + n.got[n.m2]) / 2;
-          perform(p, n.m, e, { double: true, gold: n.gold }); Stats.add(p.lastQ);
+          perform(p, n.m, e, { double: true, gold: n.gold }); Stats.add(p.lastQ); if (p.lastQ >= 1) Tutorial.hit(n);
         }
         return;
       }
       if (n.m === moveId) {
         n.t = Game.t; MoveBar.hit(moveId); n.state = n.len ? 4 : 1;
-        perform(p, moveId, hit.e, { gold: n.gold }); Stats.add(p.lastQ); speedUpFree();
+        perform(p, moveId, hit.e, { gold: n.gold }); Stats.add(p.lastQ); speedUpFree(); if (!n.len && p.lastQ >= 1) Tutorial.hit(n);
         if (Math.abs(hit.e) <= .06 && R3.ok) R3.fxCircle(1);
       } else { n.state = 2; n.t = Game.t; MoveBar.bad(moveId); popup('MOSSA SBAGLIATA', p.sx, p.sy - 158, '#ff7a8a', 9, .9); perform(p, moveId, .3); Stats.add(0); }
       return;
@@ -1699,6 +1771,7 @@ const Notes = {
     const b = Clock.beat(), p = Game.active, prefs = p ? CHARS[p.id].prefs : {};
     this.ahead = SPEED_AHEAD[speedLvl()];
     while (this.nextBeat < b + this.ahead + 2) {
+      if (Tutorial.on) { const tn = Tutorial.make(this.nextBeat); if (tn) { this.list.push(tn); this.last = tn.m; } this.nextBeat += tn && tn.len ? 6 : 4; continue; }
       const opts = NOTE_MOVES.filter(m => m !== this.last && (m !== 'celebrate' || Math.random() < .5));
       let tot = 0; opts.forEach(m => tot += (prefs[m] || 1)); let r = Math.random() * tot, m = opts[0];
       for (const o of opts) { r -= (prefs[o] || 1); if (r <= 0) { m = o; break; } }
@@ -1727,7 +1800,7 @@ const Notes = {
       }
       if (n.state === 4) { // nota lunga tenuta
         if (now >= n.beat + n.len) {
-          n.state = 1; n.t = Game.t; MoveBar.hit(n.m);
+          n.state = 1; n.t = Game.t; MoveBar.hit(n.m); Tutorial.hit(n);
           if (p) { const bonus = Math.round(160 * (1 + .15 * Math.min(p.combo, 10))); p.score += bonus; p.total += bonus; popup('HOLD +' + bonus, p.sx, p.sy - 176, '#7cf7ff', 11, 1.1); Audio.combo(4); }
         } else if (!HELD.has(n.m) && now < n.beat + n.len - .3) { n.state = 5; n.t = Game.t; if (p) popup('RILASCIATA', p.sx, p.sy - 176, '#ffb0b0', 9, .9); }
       }
@@ -1926,6 +1999,228 @@ const MoveBar = {
   }
 };
 
+/* ---------------- lingua IT / EN ---------------- */
+const LANG = { cur: store.get('lang', (navigator.language || 'it').toLowerCase().startsWith('it') ? 'it' : 'en') };
+/* frasi italiane -> inglese (le più lunghe prima). I nomi delle piazze restano in italiano. */
+const EN = [
+  ["CONQUISTA LA PIAZZA. DIVENTA AURA LEGEND.", "CONQUER THE PIAZZA. BECOME AN AURA LEGEND."],
+  ["CARICAMENTO PERSONAGGI 3D...", "LOADING 3D CHARACTERS..."],
+  ["SCEGLI IL TUO PERSONAGGIO", "CHOOSE YOUR CHARACTER"],
+  ["ENTRA IN PIAZZA >", "ENTER THE PIAZZA >"],
+  ["MENU PRINCIPALE", "MAIN MENU"], ["RICOMINCIA", "RESTART"], ["RIPRENDI", "RESUME"], ["PAUSA", "PAUSE"],
+  ["EFFETTI SONORI", "SOUND EFFECTS"], ["ANNUNCIATORE", "ANNOUNCER"], ["GUIDA AL RITMO", "RHYTHM GUIDE"], ["DIFFICOLTA'", "DIFFICULTY"],
+  ["SINCRONIZZA AUDIO", "AUDIO SYNC"], ["LINGUA", "LANGUAGE"], ["CALIBRA", "CALIBRATE"],
+  ["MUSICA", "MUSIC"], ["PIAZZE", "PIAZZAS"], ["AUTO (ORARIO)", "AUTO (CLOCK)"], ["NOTTE", "NIGHT"], ["GIORNO", "DAY"],
+  ["QUICK BATTLE - SCEGLI", "QUICK BATTLE - CHOOSE"], ["FREE STYLE - SCEGLI", "FREE STYLE - CHOOSE"], ["AURA CHALLENGE - SCEGLI", "AURA CHALLENGE - CHOOSE"],
+  ["UNA PIAZZA PER SFIDA", "ONE PIAZZA PER CHALLENGE"], ["PIAZZA A CASO", "RANDOM PIAZZA"], ["TOUR D'ITALIA", "TOUR OF ITALY"],
+  ["ROUND 1 - INGRESSO", "ROUND 1 - ENTRANCE"], ["ROUND 2 - ESIBIZIONE", "ROUND 2 - PERFORMANCE"], ["ROUND 3 - POSA FINALE", "ROUND 3 - FINAL POSE"],
+  ["INGRESSO", "ENTRANCE"], ["ESIBIZIONE", "PERFORMANCE"], ["POSA FINALE", "FINAL POSE"],
+  ["IL RIVALE PREPARA LA POSA...", "THE RIVAL IS PREPARING THE POSE..."], ["TOCCA UN PULSANTE / SPAZIO!", "TAP A BUTTON / SPACE!"],
+  ["IL TUO TURNO!", "YOUR TURN!"], ["TOCCA A TE!", "YOUR TURN!"], ["TOCCA A LUI", "THEIR TURN"], ["TOCCA A ", "NOW: "], ["TOCCA PLAY", "TAP PLAY"],
+  ["ROUND VINTO!", "ROUND WON!"], ["ROUND PERSO", "ROUND LOST"], ["VITTORIA!", "VICTORY!"], ["SCONFITTA", "DEFEAT"],
+  ["HAI CONQUISTATO LE PIAZZE D'ITALIA!", "YOU CONQUERED THE PIAZZAS OF ITALY!"], ["Il pubblico ha scelto", "The crowd chose"],
+  ["PROSSIMO RIVALE", "NEXT RIVAL"], ["PROSSIMA PIAZZA", "NEXT PIAZZA"], ["PROSSIMA SFIDA", "NEXT CHALLENGE"],
+  ["PUNTEGGIO TOTALE", "TOTAL SCORE"], ["MIGLIOR COMBO", "BEST COMBO"], ["MIGLIOR SERIE", "BEST STREAK"], ["LIVELLO RAGGIUNTO", "LEVEL REACHED"],
+  ["PUNTEGGIO", "SCORE"], ["PRECISIONE", "ACCURACY"], ["RIGIOCA", "PLAY AGAIN"], ["CONDIVIDI", "SHARE"],
+  ["MOSSA SBAGLIATA", "WRONG MOVE"], ["POSA SBAGLIATA", "WRONG POSE"], ["SBAGLIATA!", "WRONG!"], ["FUORI TEMPO", "OFF TIME"], ["MANCATA!", "MISSED!"],
+  ["AURA NON CARICA", "AURA NOT CHARGED"], ["DOPPIA INCOMPLETA", "DOUBLE INCOMPLETE"], ["DOPPIA x2!", "DOUBLE x2!"], ["RILASCIATA", "RELEASED"],
+  ["SEQUENZA OK!", "SEQUENCE OK!"], ["LIVELLO ", "LEVEL "], ["SERIE ", "STREAK "], ["VELOCITA'", "SPEED"], ["SFIDA ", "CHALLENGE "],
+  ["RIVALE ", "RIVAL "], [" · RIVALE", " · RIVAL"], ["VINTO", "WON"], ["PERSO", "LOST"],
+  ["MOTORE 3D NON DISPONIBILE: SERVE LA CONNESSIONE", "3D ENGINE NOT AVAILABLE: CONNECTION NEEDED"], ["MOTORE 3D NON DISPONIBILE", "3D ENGINE NOT AVAILABLE"],
+  ["ERRORE MODELLI 3D", "3D MODEL ERROR"], ["CARICAMENTO", "LOADING"],
+  ["NUOVO PERSONAGGIO SBLOCCATO", "NEW CHARACTER UNLOCKED"], ["NUOVA PIAZZA SBLOCCATA", "NEW PIAZZA UNLOCKED"],
+  ["BATTILO NEL TOUR PER SBLOCCARLO", "BEAT HIM IN THE TOUR TO UNLOCK"], ["VINCI QUI NEL TOUR PER SBLOCCARLA", "WIN HERE IN THE TOUR TO UNLOCK"],
+  ["BLOCCATO", "LOCKED"], ["BLOCCATA", "LOCKED"], ["RECORD", "RECORD"],
+  // tutorial
+  ["SALTA TUTORIAL", "SKIP TUTORIAL"], ["TUTORIAL COMPLETATO!", "TUTORIAL COMPLETE!"],
+  ["Le note arrivano da destra. Premi DANCE quando la nota entra nel cerchio bianco.", "Notes come from the right. Press DANCE when the note enters the white circle."],
+  ["Ogni colore è una mossa diversa: premi il pulsante dello stesso colore della nota.", "Each colour is a different move: press the button with the same colour as the note."],
+  ["Nota DOPPIA (due icone): premi le due mosse insieme. Vale x2!", "DOUBLE note (two icons): press both moves together. Worth x2!"],
+  ["Nota LUNGA (con la coda): tieni premuto il pulsante fino alla fine della coda.", "LONG note (with a tail): hold the button until the end of the tail."],
+  ["Nota D'ORO: prendila a tempo, vale il triplo!", "GOLD note: hit it on time, it's worth triple!"],
+  ["Il pulsante COMBO è carico: premilo e il tuo ballerino fa 3 mosse da solo.", "The COMBO button is charged: press it and your dancer does 3 moves by itself."],
+  ["Barra AURA piena! Premi SPECIAL per la mossa speciale (sul primo battito vale di più).", "AURA bar full! Press SPECIAL for the special move (on the first beat it's worth more)."],
+  ["Perfetto! Ora sei pronto per sfidare i rivali nelle piazze d'Italia.", "Perfect! Now you're ready to challenge rivals in the piazzas of Italy."],
+  // calibrazione
+  ["Tocca lo schermo (o premi SPAZIO) a tempo con il click, per 8 volte.", "Tap the screen (or press SPACE) in time with the click, 8 times."],
+  ["Con le cuffie Bluetooth il suono arriva in ritardo: questa prova lo misura e corregge il tempo del gioco.", "With Bluetooth headphones the sound arrives late: this test measures it and corrects the game timing."],
+  ["RITARDO MISURATO", "MEASURED DELAY"], ["SALVA", "SAVE"], ["RIPROVA", "RETRY"], ["AZZERA", "RESET"], ["INIZIA", "START"], ["TOCCA A TEMPO!", "TAP IN TIME!"],
+  // condivisione
+  ["Ho fatto", "I scored"], ["in Aura Battle!", "in Aura Battle!"], ["IMMAGINE SALVATA", "IMAGE SAVED"],
+  // personaggi
+  ["Maschera da incubo e tuta coperta di glifi: nessuno ha mai visto la sua faccia.", "Nightmare mask and a glyph-covered tracksuit: nobody has ever seen his face."],
+  ["Balletti buffi, breakdance, pose teatrali. Aura VERDE ACQUA.", "Goofy dances, breakdance, theatrical poses. TEAL aura."],
+  ["Testa da cavallo, pantofole pelose, zero spiegazioni.", "Horse head, fluffy slippers, zero explanations."],
+  ["Hip hop, salti mortali, groove assurdi. Aura GIALLA.", "Hip hop, somersaults, absurd grooves. YELLOW aura."],
+  ["Il mostro verde peloso che vuole abbracciare tutta la piazza.", "The furry green monster who wants to hug the whole piazza."],
+  ["YMCA, Gangnam, braccia a mulino. Aura VERDE LIME.", "YMCA, Gangnam, windmill arms. LIME aura."],
+  ["Canotta rossa, cresta biondissima e muscoli da carro armato.", "Red tank top, platinum crest and tank-sized muscles."],
+  ["Hip hop pesante, squat e groove potenti. Aura ROSSA.", "Heavy hip hop, squats and powerful grooves. RED aura."],
+  ["Capelli blu, zeppe giganti e polvere di stelle in tasca.", "Blue hair, giant platforms and stardust in her pocket."],
+  ["Pop, magia e pose da diva. Aura BLU.", "Pop, magic and diva poses. BLUE aura."],
+  ["Colbacco di pelliccia, armatura borchiata e baffi leggendari: viene dalla steppa.", "Fur hat, studded armour and a legendary moustache: he comes from the steppe."],
+  ["Danze di guerra, Gangnam e braccia a mulino. Aura BRONZO.", "War dances, Gangnam and windmill arms. BRONZE aura."],
+  ["BALLI", "DANCES"],
+  // come si gioca
+  ["Le note scorrono nella pista in basso verso il cerchio bianco, ognuna con l'icona e il colore della sua mossa: premi quella mossa quando la nota entra nel cerchio. Sotto, la tessera e il pulsante della prossima mossa si illuminano.", "Notes scroll along the bottom lane towards the white circle, each with the icon and colour of its move: press that move when the note enters the circle. The tile and button of the next move light up just before."],
+  ["Sopra ogni tessera vedi quanti punti vale adesso quella mossa; la barra a segmenti e' la tua combo (8 = MAX COMBO).", "Each tile shows how many points that move is worth right now; the segmented bar is your combo (8 = MAX COMBO)."],
+  ["PERFECT / GREAT / GOOD danno piu' Aura Points, OFF BEAT dimezza.", "PERFECT / GREAT / GOOD give more Aura Points, OFF BEAT halves them."],
+  ["NOTE SPECIALI: con la coda = tienila premuta fino alla fine; doppia (due icone) = premi le due mosse insieme (vale x2); bordo d'oro = vale x3.", "SPECIAL NOTES: with a tail = hold until the end; double (two icons) = press both moves together (x2); gold border = x3."],
+  ["Alterna mosse diverse per salire di COMBO. Ripetere la stessa mossa rende sempre meno.", "Alternate different moves to build your COMBO. Repeating the same move gives less and less."],
+  ["4 mosse diverse pulite di fila = CLEAN COMBO x2.", "4 different clean moves in a row = CLEAN COMBO x2."],
+  ["Ogni 3 combo guadagni una carica COMBO: esegue in automatico le tue ultime 3 mosse.", "Every 3 combo steps you earn a COMBO charge: it performs your last 3 moves automatically."],
+  ["La barra AURA si riempie coi punti: a barra piena usa SPECIAL, meglio se sul primo beat della battuta (bonus MAX AURA).", "The AURA bar fills with points: when it's full use SPECIAL, best on the first beat of the bar (MAX AURA bonus)."],
+  ["Il pubblico caldo moltiplica i punti, quello annoiato li riduce.", "A hyped crowd multiplies your points, a bored one reduces them."],
+  ["QUICK BATTLE: 3 round (Ingresso, Esibizione, Posa Finale) contro i 2 rivali. Chi vince 2 round passa.", "QUICK BATTLE: 3 rounds (Entrance, Performance, Final Pose). Win 2 rounds to move on."],
+  ["Posa finale: ferma l'indicatore nella zona d'oro.", "Final pose: stop the marker in the gold zone."],
+  ["TASTIERA", "KEYBOARD"], ["SPAZIO", "SPACE"], ["INVIO conferma", "ENTER confirm"], ["ESC pausa", "ESC pause"],
+].sort((a, b) => b[0].length - a[0].length);
+function T(t) {
+  if (LANG.cur === 'it' || t == null) return t;
+  let s = String(t);
+  for (const [it, en] of EN) if (s.indexOf(it) >= 0) s = s.split(it).join(en);
+  return s;
+}
+/* traduce tutti i testi della pagina (e quelli che compaiono dopo) */
+function translateNode(n) {
+  if (n.nodeType === 3) {
+    if (n.__it === undefined || (n.nodeValue !== n.__en && n.nodeValue !== n.__it)) n.__it = n.nodeValue;
+    const v = LANG.cur === 'en' ? T(n.__it) : n.__it; n.__en = v;
+    if (n.nodeValue !== v) n.nodeValue = v;
+  } else if (n.nodeType === 1 && n.tagName !== 'SCRIPT' && n.tagName !== 'STYLE') for (const c of n.childNodes) translateNode(c);
+}
+function applyLang() { document.documentElement.lang = LANG.cur; const b = document.getElementById('bLang'); if (b) b.textContent = LANG.cur === 'it' ? 'LINGUA: ITALIANO' : 'LANGUAGE: ENGLISH'; translateNode(document.body); }
+new MutationObserver(ms => { for (const m of ms) { if (m.type === 'characterData') translateNode(m.target); else m.addedNodes.forEach(translateNode); } })
+  .observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+
+/* ---------------- calibrazione audio (cuffie Bluetooth) ---------------- */
+const Calib = {
+  on: false, bpm: 100, taps: [], clicks: [], t0: 0, raf: 0,
+  open() { Audio.init(); showScreen('sCalib'); this.reset(); },
+  reset() { this.stop(); this.taps = []; $('calRes').textContent = ''; $('calCount').textContent = '0 / 8'; $('calSave').style.display = 'none'; $('calStart').style.display = ''; this.drawCur(); },
+  drawCur() { const v = store.get('audioOffset', null); $('calCur').textContent = T('RITARDO MISURATO') + ': ' + (v === null ? 'AUTO' : Math.round(v * 1000) + ' ms'); },
+  start() {
+    const A = Audio.ctx; if (!A) return; this.stop(); this.on = true; this.taps = []; this.clicks = [];
+    $('calStart').style.display = 'none'; $('calSave').style.display = 'none'; $('calRes').textContent = T('TOCCA A TEMPO!');
+    if (Audio.songSrc) Audio.stopSong(); Audio.pausedGain = true; Audio.applyGain();
+    const bl = 60 / this.bpm; this.t0 = A.currentTime + .6;
+    for (let i = 0; i < 14; i++) { const t = this.t0 + i * bl; this.clicks.push(t); Audio.osc('square', i % 4 ? 1000 : 1500, t, .05, .25); }
+    const loop = () => { if (!this.on) return; const ph = ((A.currentTime - (A.outputLatency || A.baseLatency || 0) - this.t0) / bl) % 1; $('calDot').style.transform = 'scale(' + (1 + Math.pow(Math.max(0, 1 - ph), 4) * .6) + ')'; this.raf = requestAnimationFrame(loop); };
+    loop();
+    this.endT = setTimeout(() => this.finish(), (this.t0 - A.currentTime + 14 * bl + .4) * 1000);
+  },
+  tap() {
+    if (!this.on) return; const A = Audio.ctx, t = A.currentTime;
+    let best = null; for (const c of this.clicks) if (best === null || Math.abs(t - c) < Math.abs(t - best)) best = c;
+    const d = t - best; if (Math.abs(d) < .45) this.taps.push(d);
+    $('calCount').textContent = Math.min(8, this.taps.length) + ' / 8';
+    if (this.taps.length >= 8) this.finish();
+  },
+  finish() {
+    if (!this.on) return; this.stop();
+    if (this.taps.length < 4) { $('calRes').textContent = '?'; $('calStart').style.display = ''; return; }
+    const a = this.taps.slice().sort((x, y) => x - y), med = a[a.length >> 1];
+    this.val = clamp(med, 0, .4); $('calRes').textContent = T('RITARDO MISURATO') + ': ' + Math.round(this.val * 1000) + ' ms';
+    $('calSave').style.display = ''; $('calStart').style.display = '';
+  },
+  save() { store.set('audioOffset', this.val); this.drawCur(); Audio.click(); go('settings'); },
+  clear() { try { localStorage.removeItem('aura_audioOffset'); } catch (e) { } this.drawCur(); Audio.click(); },
+  stop() { this.on = false; cancelAnimationFrame(this.raf); clearTimeout(this.endT); Audio.pausedGain = false; Audio.applyGain(); }
+};
+/* ---------------- progressione ---------------- */
+const START_CHARS = ['jester', 'horse', 'monster'], START_VENUES = ['milano', 'spagna', 'napoli'];
+const Prog = {
+  chars() { return store.get('unlockedChars', START_CHARS.slice()); },
+  venues() { return store.get('unlockedVenues', START_VENUES.slice()); },
+  hasChar(id) { return this.chars().includes(id) || !START_CHARS.length; },
+  hasVenue(id) { return id === 'tour' || this.venues().includes(id); },
+  unlockChar(id) { const a = this.chars(); if (a.includes(id)) return false; a.push(id); store.set('unlockedChars', a); return true; },
+  unlockVenue(id) { const a = this.venues(); if (a.includes(id)) return false; a.push(id); store.set('unlockedVenues', a); return true; },
+  rec(v) { return (store.get('venueRec', {}))[v] || null; },
+  setRec(v, score, grade) {
+    const all = store.get('venueRec', {}), r = all[v] || { score: 0, grade: 'D' };
+    r.score = Math.max(r.score, score); if ('SABCD'.indexOf(grade) < 'SABCD'.indexOf(r.grade)) r.grade = grade;
+    all[v] = r; store.set('venueRec', all);
+  }
+};
+/* ---------------- condivisione del risultato (immagine per WhatsApp / Instagram) ---------------- */
+async function shareResult() {
+  const r = Game.results && Game.results[Game.results.length - 1]; if (!r) return;
+  Audio.click();
+  const W2 = 1080, H2 = 1350, c = document.createElement('canvas'); c.width = W2; c.height = H2; const g = c.getContext('2d');
+  try { await document.fonts.load("40px 'Press Start 2P'"); } catch (e) { }
+  const bg = VIMG_N[r.venue] || VIMG[r.venue];
+  g.fillStyle = '#0b0618'; g.fillRect(0, 0, W2, H2);
+  if (bg) { const k = Math.max(W2 / bg.width, H2 / bg.height); g.drawImage(bg, (W2 - bg.width * k) / 2, (H2 - bg.height * k) / 2, bg.width * k, bg.height * k); }
+  const gr = g.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, 'rgba(8,4,20,.55)'); gr.addColorStop(.45, 'rgba(8,4,20,.25)'); gr.addColorStop(1, 'rgba(8,4,20,.92)'); g.fillStyle = gr; g.fillRect(0, 0, W2, H2);
+  if (R3.logoImg) { const lw = 400, lh = lw * R3.logoImg.height / R3.logoImg.width; g.drawImage(R3.logoImg, (W2 - lw) / 2, 30, lw, lh); }
+  const C = CHARS[Game.sel], pimg = R3.portraits && R3.portraits[Game.sel];
+  g.save(); g.shadowColor = C.color; g.shadowBlur = 60;
+  if (pimg) { const pw = 340, ph = pw * pimg.height / pimg.width, px = (W2 - pw) / 2, py = 360; g.fillStyle = C.color; g.fillRect(px - 8, py - 8, pw + 16, ph + 16); g.shadowBlur = 0; g.drawImage(pimg, px, py, pw, ph); }
+  g.restore();
+  g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 10; g.strokeStyle = '#000';
+  const txt = (t, y, col, size) => { g.font = size + "px 'Press Start 2P', monospace"; g.strokeText(t, W2 / 2, y); g.fillStyle = col; g.fillText(t, W2 / 2, y); };
+  txt(C.name, 830, C.color, 46);
+  txt((r.grade || '') + '   ' + r.ps + ' AURA', 930, Stats.gradeCol(r.grade || 'B'), 54);
+  txt(T('PRECISIONE') + ' ' + (r.acc || 0) + '%  ·  COMBO x' + r.combo, 1010, '#fff', 28);
+  txt(VENUES[r.venue].name + ' · ' + VENUES[r.venue].city, 1075, '#ffc83a', 26);
+  txt((r.win ? T('VITTORIA!') : T('SCONFITTA')) + ' vs ' + CHARS[r.opp].name, 1140, r.win ? '#22d36b' : '#ff7a8a', 26);
+  txt('AURA BATTLE', 1300, 'rgba(255,255,255,.55)', 22);
+  const url = /^https?:/.test(location.href) && !/claude/.test(location.host) ? location.href.split('?')[0] : '';
+  const text = T('Ho fatto') + ' ' + r.ps + ' Aura Points (' + (r.grade || '-') + ') ' + T('in Aura Battle!') + (url ? ' ' + url : '');
+  const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+  const file = new File([blob], 'aura-battle.png', { type: 'image/png' });
+  try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'aura-battle.png'; document.body.appendChild(a); a.click(); a.remove();
+  popup('IMMAGINE SALVATA', 320, 120, '#7cf7ff', 12, 1.5);
+}
+/* ---------------- tutorial giocato ---------------- */
+const Tutorial = {
+  on: false, i: 0, got: 0,
+  steps: [
+    { kind: 'dance', need: 3, text: 'Le note arrivano da destra. Premi DANCE quando la nota entra nel cerchio bianco.' },
+    { kind: 'basic', need: 4, text: 'Ogni colore è una mossa diversa: premi il pulsante dello stesso colore della nota.' },
+    { kind: 'double', need: 2, text: 'Nota DOPPIA (due icone): premi le due mosse insieme. Vale x2!' },
+    { kind: 'hold', need: 2, text: 'Nota LUNGA (con la coda): tieni premuto il pulsante fino alla fine della coda.' },
+    { kind: 'gold', need: 2, text: "Nota D'ORO: prendila a tempo, vale il triplo!" },
+    { kind: 'combo', need: 1, text: 'Il pulsante COMBO è carico: premilo e il tuo ballerino fa 3 mosse da solo.' },
+    { kind: 'special', need: 1, text: 'Barra AURA piena! Premi SPECIAL per la mossa speciale (sul primo battito vale di più).' },
+    { kind: 'end', need: 0, text: "Perfetto! Ora sei pronto per sfidare i rivali nelle piazze d'Italia." }
+  ],
+  start() {
+    pendingMode = 'free'; Game.venueSel = 'tour'; if (!Prog.hasChar(Game.sel)) Game.sel = 'jester';
+    this.on = true; this.i = 0; startFree(); Game.freeLvl = 0; this.enter();
+  },
+  enter() {
+    const st = this.steps[this.i], p = Game.player; this.got = 0;
+    $('tutBox').classList.add('on'); $('tutText').textContent = T(st.text); $('tutStep').textContent = (this.i + 1) + ' / ' + this.steps.length;
+    for (const n of Notes.list) if (n.state === 0) n.state = 3;
+    Notes.nextBeat = Math.ceil(Clock.beat()) + 4;
+    if (st.kind === 'combo' && p) { p.charges = 1; $('comboCh').textContent = '1'; }
+    if (st.kind === 'special' && p) p.meter = 100;
+    if (st.kind === 'end') { Audio.combo(10); banner('TUTORIAL COMPLETATO!', '#ffe03c'); store.set('tutDone', true); setTimeout(() => { if (this.on) this.finish(); }, 4200); }
+  },
+  /* che nota generare durante il passo attuale (null = nessuna) */
+  make(beat) {
+    const k = this.steps[this.i].kind, basic = ['dance', 'gesture', 'walk', 'mewing'];
+    if (k === 'dance') return { beat, m: 'dance', state: 0 };
+    if (k === 'basic') return { beat, m: pick(basic.filter(x => x !== Notes.last)), state: 0 };
+    if (k === 'double') { const m = pick(basic); return { beat, m, m2: pick(basic.filter(x => x !== m)), state: 0 }; }
+    if (k === 'hold') return { beat, m: pick(basic), len: 3, state: 0 };
+    if (k === 'gold') return { beat, m: pick(basic), gold: true, state: 0 };
+    return null;
+  },
+  hit(n) { if (!this.on) return; const k = this.steps[this.i].kind; if (['dance', 'basic', 'double', 'hold', 'gold'].includes(k)) this.progress(); },
+  ev(e) { if (this.on && this.steps[this.i].kind === e) this.progress(); },
+  progress() {
+    if (!this.on || this.i >= this.steps.length - 1) return;
+    this.got++; if (this.got < this.steps[this.i].need) return;
+    Audio.combo(6); popup('OK!', 320, 110, '#22d36b', 16, .9);
+    this.i++; setTimeout(() => { if (this.on) this.enter(); }, 1200);
+  },
+  finish() { this.on = false; $('tutBox').classList.remove('on'); store.set('tutDone', true); go('play'); },
+  skip() { Audio.click(); this.on = false; $('tutBox').classList.remove('on'); store.set('tutDone', true); go('play'); }
+};
 /* ---------------- annunciatore ---------------- */
 const Voice = {
   on: store.get('voice', true), last: 0, _v: undefined,
@@ -1999,7 +2294,8 @@ function setupStage(playerId, oppId) {
 }
 function startBattle() {
   Game.mode = 'battle';
-  Game.oppList = CHAR_IDS.filter(c => c !== Game.sel).sort(() => Math.random() - .5).slice(0, RIVALS);
+  const others = CHAR_IDS.filter(c => c !== Game.sel).sort(() => Math.random() - .5);
+  Game.oppList = others.filter(c => Prog.hasChar(c)).concat(others.filter(c => !Prog.hasChar(c))).slice(0, RIVALS);
   Game.oppIndex = 0; Game.results = [];
   startMatch();
 }
@@ -2118,6 +2414,11 @@ function matchEnd() {
     body += `<br><br>PUNTEGGIO TOTALE: ${totalScore}<br>MIGLIOR COMBO: x${bestCombo}`;
     const gr = Game.results[Game.results.length - 1].grade; if (gr) { const bg = store.get('bestGrade', 'D'); if ('SABCD'.indexOf(gr) < 'SABCD'.indexOf(bg)) store.set('bestGrade', gr); }
     saveBest(totalScore, bestCombo);
+    const lastR = Game.results[Game.results.length - 1]; Prog.setRec(lastR.venue, lastR.ps, lastR.grade || 'D');
+    let unl = '';
+    if (pw) { if (Prog.unlockChar(O.id)) unl += `<div class="unl">&#9733; NUOVO PERSONAGGIO SBLOCCATO: <span style="color:${CHARS[O.id].color}">${CHARS[O.id].name}</span></div>`;
+      if (Prog.unlockVenue(Game.venue)) unl += `<div class="unl">&#9733; NUOVA PIAZZA SBLOCCATA: ${VENUES[Game.venue].name}</div>`; }
+    if (unl) { body = unl + '<br>' + body; Audio.combo(10); }
     if (pw && !last) showResult('VITTORIA!', 'win', body + '<br><br>PROSSIMO RIVALE: ' + CHARS[Game.oppList[Game.oppIndex + 1]].name + (Game.venueSel === 'tour' ? '<br>PROSSIMA PIAZZA: ' + VENUES[pickVenue(Game.oppIndex + 1)].name + ', ' + VENUES[pickVenue(Game.oppIndex + 1)].city : ''), 'PROSSIMA SFIDA', () => { Game.oppIndex++; startMatch(); });
     else if (pw && last) showResult('AURA LEGEND!', 'win', 'HAI CONQUISTATO LE PIAZZE D\'ITALIA!<br><br>' + body, 'RIGIOCA', () => startBattle());
     else showResult('SCONFITTA', 'lose', 'Il pubblico ha scelto ' + CHARS[O.id].name + '.<br><br>' + body, 'RIGIOCA', () => startBattle());
@@ -2167,9 +2468,9 @@ function startFree() {
   const p = Game.player; p.homeX = 320; p.tx = 320; p.sc = 1.05; p.y = FLOOR; p.baseFlip = false;
   p.x = 230; p.setAnim('entrance', 3 * Clock.beatLen); p.tx = 320;
   Game.active = p; Game.hype = 35;
-  setVenue(Game.venueSel === 'tour' ? pick(VENUE_IDS) : Game.venueSel);
+  setVenue(Game.venueSel === 'tour' || !Prog.hasVenue(Game.venueSel) ? pick(VENUE_IDS.filter(v => Prog.hasVenue(v))) : Game.venueSel);
   Game.freeHits = 0; Game.freeLvl = 0; Notes.start(Clock.beat() + 4); Stats.reset();
-  showUI('free'); banner('FREE STYLE - ' + VENUES[Game.venue].name, '#7cf7ff'); if (R3.ok) R3.shot('fly', null, 2.4);
+  showUI('free'); if (!Tutorial.on) { $('tutBox').classList.remove('on'); banner('FREE STYLE - ' + VENUES[Game.venue].name, '#7cf7ff'); } if (R3.ok) R3.shot('fly', null, 2.4);
 }
 
 /* ---------------- AURA CHALLENGE ---------------- */
@@ -2182,7 +2483,7 @@ function startChallenge() {
   const p = Game.player; p.homeX = 320; p.tx = 320; p.sc = 1; p.y = FLOOR; p.baseFlip = false;
   Game.active = p; Game.hype = 30;
   Game.ch = { level: 1, lives: 3, score: 0, mult: 1, streak: 0, best: 0, seq: [], slot: 0, phase: 'show', startBeat: 0, results: [], perfectAll: true };
-  setVenue(Game.venueSel === 'tour' ? pick(VENUE_IDS) : Game.venueSel);
+  setVenue(Game.venueSel === 'tour' || !Prog.hasVenue(Game.venueSel) ? pick(VENUE_IDS.filter(v => Prog.hasVenue(v))) : Game.venueSel);
   showUI('challenge');
   newSequence();
 }
@@ -2305,19 +2606,20 @@ function showUI(mode) {
 }
 function hideGameUI() { $('hud').classList.remove('on'); $('pad').classList.remove('on'); resize(); }
 function goMenu() {
-  Notes.stop();
+  Notes.stop(); Tutorial.on = false; $('tutBox').classList.remove('on'); Calib.stop();
   if (Audio.songId !== MENU_SONG) { Audio.stopSong(); if (Audio.ctx) { Audio.playing = false; clearInterval(Audio.timer); } }
   Game.state = 'menu'; Game.paused = false; Game.active = null; Game.player = null; Game.opp = null; Game.ch = null; hideGameUI(); showScreen('sMenu');
   if (!Audio.songSrc) Clock.setBPM(110); menuMusic(); Audio.pausedGain = false; Audio.applyGain();
 }
 function showResult(title, cls, body, nextLabel, nextFn) {
+  $('rShare').style.display = Game.mode === 'battle' && Game.results && Game.results.length ? '' : 'none';
   $('rTitle').textContent = title; $('rTitle').className = 'big ' + cls; $('rBody').innerHTML = body;
   $('rNext').textContent = nextLabel; Game.onNext = nextFn;
   $('pad').classList.remove('on');
   showScreen('sResult');
 }
 let bannerEl = null;
-function banner(text, col) { Game.banner = { text, col, t: 0 }; }
+function banner(text, col) { Game.banner = { text: T(text), col, t: 0 }; }
 function setPause(on) {
   if (!['battle', 'free', 'challenge'].includes(Game.state)) return;
   if ($('sResult').classList.contains('on')) return;
@@ -2338,7 +2640,7 @@ function setVenue(id, announce) {
 }
 function pickVenue(matchIndex) {
   if (Game.venueSel !== 'tour') return Game.venueSel;
-  if (matchIndex === 0 || !Game.tourOrder.length) Game.tourOrder = VENUE_IDS.slice().sort(() => Math.random() - .5);
+  if (matchIndex === 0 || !Game.tourOrder.length) { const v = VENUE_IDS.slice().sort(() => Math.random() - .5); Game.tourOrder = v.filter(x => Prog.hasVenue(x)).concat(v.filter(x => !Prog.hasVenue(x))); }
   return Game.tourOrder[matchIndex % Game.tourOrder.length];
 }
 function buildVenues() {
@@ -2347,8 +2649,9 @@ function buildVenues() {
   for (const id of opts) {
     const d = document.createElement('button'); d.className = 'venue' + (Game.venueSel === id ? ' sel' : '');
     if (id === 'tour') d.innerHTML = `<div class="tourimg">${VENUE_IDS.map(v => `<img src="${ASSETS.venues[v].thumb}" alt="">`).join('')}</div>TOUR D'ITALIA<br>${pendingMode === 'play' ? 'UNA PIAZZA PER SFIDA' : 'PIAZZA A CASO'}`;
-    else d.innerHTML = `<img src="${ASSETS.venues[id].thumb}" alt="">${VENUES[id].name}<br>${VENUES[id].city}`;
-    d.onclick = () => { Game.venueSel = id; store.set('venue', id); Audio.init(); Audio.click(); buildVenues(); if (id !== 'tour') setVenue(id); };
+    else { const lk = !Prog.hasVenue(id), r = Prog.rec(id); if (lk) d.classList.add('locked');
+      d.innerHTML = `<img src="${ASSETS.venues[id].thumb}" alt="">${VENUES[id].name}<br>${VENUES[id].city}` + (lk ? `<br><span class="lock">&#128274; BLOCCATA</span>` : r ? `<br><span style="color:${Stats.gradeCol(r.grade)}">${r.grade}</span> ${r.score}` : ''); }
+    d.onclick = () => { if (id !== 'tour' && !Prog.hasVenue(id)) { Audio.init(); Audio.tick(false); return; } Game.venueSel = id; store.set('venue', id); Audio.init(); Audio.click(); buildVenues(); if (id !== 'tour') setVenue(id); };
     wrap.appendChild(d);
   }
 }
@@ -2356,12 +2659,15 @@ function buildVenues() {
 /* menu e selezione */
 let pendingMode = 'play';
 function buildCards() {
+  if (!Prog.hasChar(Game.sel)) Game.sel = CHAR_IDS.find(c => Prog.hasChar(c)) || CHAR_IDS[0];
+  if (Game.venueSel !== 'tour' && !Prog.hasVenue(Game.venueSel)) Game.venueSel = 'tour';
   const wrap = $('cards'); wrap.innerHTML = ''; wrap.classList.toggle('many', CHAR_IDS.length > 6);
   for (const id of CHAR_IDS) {
     const c = CHARS[id];
     const d = document.createElement('div'); d.className = 'card' + (Game.sel === id ? ' sel' : ''); d.style.setProperty('--c', c.color);
-    d.innerHTML = `<img src="${ASSETS.portraits[id]}" alt="${c.name}"><div class="nm">${c.name}</div><div class="ds">${c.desc}</div><div class="st">${c.style}</div>`;
-    d.onclick = () => { Game.sel = id; Audio.init(); Audio.click(); document.querySelectorAll('.card').forEach(x => x.classList.remove('sel')); d.classList.add('sel'); const m = R3.models[id]; if (m) { m.play('aura', 2); m.menuT = Game.t + 1.8; } };
+    const lk = !Prog.hasChar(id); if (lk) d.classList.add('locked');
+    d.innerHTML = `<img src="${ASSETS.portraits[id]}" alt="${c.name}"><div class="nm">${c.name}</div>` + (lk ? `<div class="lock">&#128274; BLOCCATO</div><div class="ds">BATTILO NEL TOUR PER SBLOCCARLO</div>` : `<div class="ds">${c.desc}</div><div class="st">${c.style}</div>`);
+    d.onclick = () => { if (lk) { Audio.init(); Audio.tick(false); d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake'); return; } Game.sel = id; Audio.init(); Audio.click(); document.querySelectorAll('.card').forEach(x => x.classList.remove('sel')); d.classList.add('sel'); const m = R3.models[id]; if (m) { m.play('aura', 2); m.menuT = Game.t + 1.8; } };
     d.dataset.id = id; wrap.appendChild(d);
   }
   const s0 = wrap.querySelector('.card.sel'); if (s0 && wrap.classList.contains('many')) setTimeout(() => s0.scrollIntoView({ inline: 'center', block: 'nearest' }), 50);
@@ -2386,6 +2692,9 @@ function drawGallery(dt) {
 function go(where) {
   Audio.init(); Audio.click();
   if (where === 'menu') return goMenu();
+  if (where === 'tutorial') { Tutorial.start(); return; }
+  if (where === 'calib') { Calib.open(); return; }
+  if (where === 'play' && !store.get('tutDone', false)) { Tutorial.start(); return; }
   if (where === 'play' || where === 'free' || where === 'challenge') {
     pendingMode = where; $('selTitle').textContent = where === 'play' ? 'QUICK BATTLE - SCEGLI' : where === 'free' ? 'FREE STYLE - SCEGLI' : 'AURA CHALLENGE - SCEGLI';
     buildCards(); buildVenues(); Game.state = 'select'; showScreen('sSelect'); return;
@@ -2403,6 +2712,7 @@ function refreshSettings() {
   const NL = { night: '&#9790; NOTTE', day: '&#9728; GIORNO', auto: 'AUTO (ORARIO)' };
   $('tNight').innerHTML = NL[Game.night]; $('bNight').innerHTML = NL[Game.night];
   $('tVoice').textContent = Voice.on ? 'ON' : 'OFF';
+  $('tLang').textContent = LANG.cur === 'it' ? 'ITALIANO' : 'ENGLISH';
   $('tDiff').textContent = Game.diff.toUpperCase(); $('tGuide').textContent = Game.guide ? 'ON' : 'OFF';
   $('bMute').innerHTML = '&#9835; ' + (Audio.musicOn ? 'ON' : 'OFF');
 }
@@ -2541,7 +2851,7 @@ function updateHUD() {
     setText('hPips', '<span style="color:#ffc83a">' + '&#9733;'.repeat(Game.roundWins[0]) + '</span>' + '&#9734;'.repeat(Math.max(0, 2 - Game.roundWins[0])) + ' : ' + '<span style="color:#7fb0ff">' + '&#9733;'.repeat(Game.roundWins[1]) + '</span>' + '&#9734;'.repeat(Math.max(0, 2 - Game.roundWins[1])));
   } else if (st === 'free') {
     setText('hPName', `<span style="color:${CHARS[P.id].color}">${CHARS[P.id].name}</span>`);
-    setText('hPScore', String(P.total)); setText('hRound', 'FREE STYLE'); setText('hTimer', Stats.total() ? '<span style="color:' + Stats.gradeCol(Stats.grade()) + '">' + Stats.grade() + '</span> ' + Stats.acc() + '%' : 'BEST x' + P.bestCombo);
+    setText('hPScore', String(P.total)); setText('hRound', Tutorial.on ? 'TUTORIAL' : 'FREE STYLE'); setText('hTimer', Stats.total() ? '<span style="color:' + Stats.gradeCol(Stats.grade()) + '">' + Stats.grade() + '</span> ' + Stats.acc() + '%' : 'BEST x' + P.bestCombo);
     setText('hPips', '<button class="btn small" style="pointer-events:auto;min-width:0;padding:6px 8px;font-size:8px" onclick="restart()">RESET</button>');
   } else if (st === 'challenge') {
     const C = Game.ch;
@@ -2819,6 +3129,14 @@ $('tSfx').addEventListener('click', () => { Audio.init(); Audio.setSfx(!Audio.sf
 function cycleNight() { const o = ['night', 'day', 'auto']; Game.night = o[(o.indexOf(Game.night) + 1) % 3]; store.set('night', Game.night); Audio.init(); Audio.click(); refreshSettings(); }
 $('tNight').addEventListener('click', cycleNight);
 $('bNight').addEventListener('click', cycleNight);
+$('tLang').addEventListener('click', () => { LANG.cur = LANG.cur === 'it' ? 'en' : 'it'; store.set('lang', LANG.cur); Audio.click(); applyLang(); refreshSettings(); });
+$('bLang').addEventListener('click', () => { LANG.cur = LANG.cur === 'it' ? 'en' : 'it'; store.set('lang', LANG.cur); Audio.init(); Audio.click(); applyLang(); });
+$('calStart').addEventListener('click', () => Calib.start());
+$('calSave').addEventListener('click', () => Calib.save());
+$('calClear').addEventListener('click', () => Calib.clear());
+bindPress($('calPad'), () => Calib.tap());
+$('tutSkip').addEventListener('click', () => Tutorial.skip());
+$('rShare').addEventListener('click', () => shareResult());
 $('tVoice').addEventListener('click', () => { Voice.on = !Voice.on; store.set('voice', Voice.on); Audio.init(); Audio.click(); refreshSettings(); if (Voice.on) Voice.say('Aura battle!', true); });
 $('tDiff').addEventListener('click', () => { const o = ['easy', 'normal', 'hard']; Game.diff = o[(o.indexOf(Game.diff) + 1) % 3]; store.set('diff', Game.diff); Audio.click(); refreshSettings(); });
 $('tGuide').addEventListener('click', () => { Game.guide = !Game.guide; store.set('guide', Game.guide); Audio.click(); refreshSettings(); });
@@ -2829,6 +3147,7 @@ cv.addEventListener('pointerdown', e => { e.preventDefault(); Audio.init(); if (
 // blocca zoom e scroll accidentali (Safari iOS)
 ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
 document.addEventListener('touchmove', e => { if (!e.target.closest('.panel,#sSelect,#sChars')) e.preventDefault(); }, { passive: false });
+applyLang();
 let lastTouch = 0; document.addEventListener('touchend', e => { const n = Date.now(); if (n - lastTouch < 300 && !e.target.closest('button')) e.preventDefault(); lastTouch = n; }, { passive: false });
 document.addEventListener('dblclick', e => e.preventDefault());
 document.addEventListener('contextmenu', e => e.preventDefault());
@@ -2836,6 +3155,7 @@ document.addEventListener('contextmenu', e => e.preventDefault());
 const KEYMAP = { Digit1: 'dance', Digit2: 'gesture', Digit3: 'walk', Digit4: 'mewing', Digit5: 'aura', Digit6: 'celebrate', KeyC: 'combo', Space: 'special', Numpad1: 'dance', Numpad2: 'gesture', Numpad3: 'walk', Numpad4: 'mewing', Numpad5: 'aura', Numpad6: 'celebrate' };
 window.addEventListener('keyup', e => { const m = KEYMAP[e.code]; if (m) HELD.delete(m); });
 window.addEventListener('keydown', e => {
+  if (Calib.on && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); if (!e.repeat) Calib.tap(); return; }
   if (KEYMAP[e.code]) HELD.add(KEYMAP[e.code]);
   if (e.repeat) { if (e.code === 'Space') e.preventDefault(); return; }
   if (e.code === 'Escape') { e.preventDefault(); if (Game.paused) setPause(false); else if (['battle', 'free', 'challenge'].includes(Game.state)) setPause(true); else goMenu(); return; }
@@ -2873,6 +3193,7 @@ function loop(now) {
 (async function boot() {
   resize();
   try {
+    try { if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude/.test(location.host)) navigator.serviceWorker.register('sw.js'); } catch (e) { }
     await loadAssets();
     iconizeButtons();
     resize();
