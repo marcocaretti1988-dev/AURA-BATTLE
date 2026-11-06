@@ -132,7 +132,7 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
 .win{color:var(--gold)}.lose{color:#7fb0ff}
 .help{font-size:7px;color:var(--dim);line-height:1.9;text-align:left;margin-top:8px}
 #gallery .gcv{width:min(52vh,280px);aspect-ratio:1/1;image-rendering:pixelated;background:radial-gradient(circle at 50% 70%,rgba(180,76,255,.3),transparent 70%);border:2px solid #3b2a6a;border-radius:8px}
-#sChars{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#sChars{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding-bottom:calc(40px + var(--sab))}
 #sChars .gcv{width:min(46vh,260px)}
 #galWrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
 #galInfo{background:var(--panel);border:2px solid #3b2a6a;border-radius:6px;padding:8px;margin:0 0 8px}
@@ -2760,7 +2760,7 @@ cv.addEventListener('pointerdown', e => { e.preventDefault(); Audio.init(); if (
 ['pointerdown', 'touchend', 'keydown'].forEach(ev => window.addEventListener(ev, () => Audio.init(), { passive: true }));
 // blocca zoom e scroll accidentali (Safari iOS)
 ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
-document.addEventListener('touchmove', e => { if (!e.target.closest('.panel,#sSelect')) e.preventDefault(); }, { passive: false });
+document.addEventListener('touchmove', e => { if (!e.target.closest('.panel,#sSelect,#sChars')) e.preventDefault(); }, { passive: false });
 let lastTouch = 0; document.addEventListener('touchend', e => { const n = Date.now(); if (n - lastTouch < 300 && !e.target.closest('button')) e.preventDefault(); lastTouch = n; }, { passive: false });
 document.addEventListener('dblclick', e => e.preventDefault());
 document.addEventListener('contextmenu', e => e.preventDefault());
