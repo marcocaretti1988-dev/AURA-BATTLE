@@ -117,6 +117,22 @@ func play_state(state: String, blend := 0.2) -> void:
 	player.seek(pos.get(clip, 0.0), true)
 
 
+## suona direttamente una clip (galleria dei personaggi)
+func play_clip(clip: String) -> void:
+	if not player.has_animation(clip):
+		return
+	if cur_clip != "":
+		pos[cur_clip] = player.current_animation_position
+	cur_clip = clip
+	anim_state = "gallery"
+	player.play(clip, 0.2)
+	player.speed_scale = 1.0
+
+
+func clip_names() -> PackedStringArray:
+	return player.get_animation_list()
+
+
 func freeze() -> void:
 	player.pause()
 

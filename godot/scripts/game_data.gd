@@ -20,6 +20,9 @@ var tour_order: Array = []
 var results: Array = []
 var music_on := true
 var sfx_on := true
+var voice_on := true
+var night_mode := "auto"          # auto / night / day
+var mode := "tour"               # tour / free / challenge / tutorial
 var best_score := 0
 var audio_offset := -1.0          # ritardo audio misurato con la calibrazione (secondi), -1 = automatico
 var lang := "it"                  # "it" oppure "en"
@@ -27,6 +30,7 @@ var unlocked_chars: Array = []
 var unlocked_venues: Array = []
 var venue_records: Dictionary = {}  # piazza -> {"score": int, "grade": "S".."D"}
 var tutorial_done := false
+var _random_venue := ""
 
 
 func _ready() -> void:
@@ -102,6 +106,23 @@ func set_record(venue_id: String, score: int, grade: String) -> void:
 
 
 ## --- Tour d'Italia: prima rivali e piazze già sbloccati, poi quelli da conquistare ---
+func start_mode(m: String) -> void:
+	mode = m
+	_random_venue = ""
+	if m == "tour":
+		start_tour()
+	else:
+		opp_list = [char_ids.filter(func(c): return c != sel_char).pick_random()]
+		opp_index = 0
+
+func is_night() -> bool:
+	if night_mode == "night":
+		return true
+	if night_mode == "day":
+		return false
+	var h: int = Time.get_datetime_dict_from_system()["hour"]
+	return h >= 19 or h < 7
+
 func start_tour() -> void:
 	var others: Array = char_ids.filter(func(c): return c != sel_char)
 	others.shuffle()
@@ -114,6 +135,12 @@ func start_tour() -> void:
 	tour_order = v.filter(func(x): return has_venue(x)) + v.filter(func(x): return not has_venue(x))
 
 func current_venue() -> String:
+	if mode != "tour":
+		if venue_sel == "tour" or not has_venue(venue_sel):
+			if _random_venue == "":
+				_random_venue = unlocked_venues.pick_random()
+			return _random_venue
+		return venue_sel
 	if venue_sel != "tour":
 		return venue_sel
 	return tour_order[opp_index % tour_order.size()]
@@ -154,6 +181,8 @@ func _load_save() -> void:
 		best_score = c.get_value("game", "best", 0)
 		music_on = c.get_value("game", "music", true)
 		sfx_on = c.get_value("game", "sfx", true)
+		voice_on = c.get_value("game", "voice", true)
+		night_mode = c.get_value("game", "night", "auto")
 		difficulty = c.get_value("game", "difficulty", "normal")
 		audio_offset = c.get_value("game", "audio_offset", -1.0)
 		lang = c.get_value("game", "lang", "it")
@@ -173,6 +202,8 @@ func save() -> void:
 	c.set_value("game", "best", best_score)
 	c.set_value("game", "music", music_on)
 	c.set_value("game", "sfx", sfx_on)
+	c.set_value("game", "voice", voice_on)
+	c.set_value("game", "night", night_mode)
 	c.set_value("game", "difficulty", difficulty)
 	c.set_value("game", "audio_offset", audio_offset)
 	c.set_value("game", "lang", lang)

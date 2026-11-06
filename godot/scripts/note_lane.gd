@@ -6,6 +6,12 @@ extends Control
 
 var battle: Node          # la scena Battle (per conductor, note, velocità)
 var flash := {}           # mossa -> tempo dell'ultimo colpo riuscito
+var icons := {}
+
+func _icon(m: String) -> Texture2D:
+	if not icons.has(m):
+		icons[m] = load("res://assets/ui/icons/%s.png" % m)
+	return icons[m]
 
 func _process(_dt: float) -> void:
 	queue_redraw()
@@ -66,7 +72,9 @@ func _draw() -> void:
 			draw_arc(Vector2(x, ly), r, 0, TAU, 24, Color(1, 0.88, 0.24) if n.gold and not miss else Color.BLACK, 3.0 if n.gold else 2.0)
 			if n.gold and not miss:
 				draw_arc(Vector2(x, ly), r + 3 + pulse * 2, 0, TAU, 24, Color(1, 0.88, 0.24, 0.4 + pulse * 0.6), 1.5)
-		# iniziale della mossa al centro della nota
-		var font := get_theme_default_font()
-		var letter: String = GameData.data["note_keys"].get(n.m, "")
-		draw_string(font, Vector2(x - r * 0.3, ly + r * 0.35), letter, HORIZONTAL_ALIGNMENT_CENTER, -1, int(r), Color.WHITE)
+		# icona della mossa al centro della nota
+		if n.m2 == "":
+			draw_texture_rect(_icon(n.m), Rect2(x - r * 0.75, ly - r * 0.75, r * 1.5, r * 1.5), false)
+		else:
+			draw_texture_rect(_icon(n.m), Rect2(x - r * 0.5, ly - r * 1.05, r, r), false)
+			draw_texture_rect(_icon(n.m2), Rect2(x - r * 0.5, ly + r * 0.05, r, r), false)
