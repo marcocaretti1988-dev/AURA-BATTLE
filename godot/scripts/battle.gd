@@ -333,7 +333,7 @@ func _label(parent: Control, fs: int, al: HorizontalAlignment) -> Label:
 
 
 func banner(text: String, col := Color(1, 0.78, 0.23)) -> void:
-	lbl_banner.text = text
+	lbl_banner.text = GameData.tr_text(text)
 	lbl_banner.add_theme_color_override("font_color", col)
 	lbl_banner.modulate.a = 1.0
 	var tw := create_tween()
@@ -343,7 +343,7 @@ func banner(text: String, col := Color(1, 0.78, 0.23)) -> void:
 
 func popup(text: String, col: Color, fs := 26) -> void:
 	var l := _label(ui.get_child(0), fs, HORIZONTAL_ALIGNMENT_CENTER)
-	l.text = text
+	l.text = GameData.tr_text(text)
 	l.add_theme_color_override("font_color", col)
 	l.set_anchors_preset(Control.PRESET_CENTER)
 	l.size = Vector2(600, 40)
@@ -438,6 +438,10 @@ func _match_end() -> void:
 	say("Victory!" if pw else "Defeat...")
 	GameData.results.append({"opp": O.id, "win": pw, "ps": P.total, "os": O.total})
 	GameData.best_score = maxi(GameData.best_score, P.total)
+	GameData.set_record(venue, P.total, _grade(_accuracy()))
+	var news: Array = GameData.unlock_after_win(O.id, venue) if pw else []
+	for i in news.size():
+		get_tree().create_timer(0.8 + i * 1.6).timeout.connect(func(): banner(GameData.tr_text(news[i]), Color(1, 0.88, 0.24)))
 	GameData.save()
 	_show_result(pw)
 

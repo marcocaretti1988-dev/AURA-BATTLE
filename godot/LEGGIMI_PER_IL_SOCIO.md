@@ -36,14 +36,28 @@ Il gioco originale è una pagina HTML (Three.js). Godot non può importare l'HTM
 - Barra aura piena → SPECIAL; se cade sul primo battito della battuta +400 (MAX AURA).
 - Round: 16 s / 22 s / 14 s. La pista accelera a ogni rivale (`speed_step` e `speed_ahead` nel JSON).
 
+## Novità della versione web (6 novembre) già preparate qui
+- **Progressione**: si parte con 3 personaggi e 3 piazze (`start_unlocked` nel JSON); battere un rivale nel Tour lo sblocca, vincere in una piazza la sblocca. Record e voto per ogni piazza. → già in `game_data.gd`, `menu.gd`, `battle.gd`.
+- **Calibrazione audio**: `GameData.audio_offset` (secondi) è già usato dal `conductor.gd`. Manca la schermata: metronomo a 100 bpm, 8 tocchi, ritardo = mediana(tocco − click), tra 0 e 0,4 s.
+- **Lingua IT/EN**: tutte le frasi tradotte sono in `i18n_en` nel JSON e `GameData.tr_text()` le applica (già usato per banner e scritte a comparsa). Manca il pulsante e la traduzione dei testi del menu.
+- **Tasto illuminato**: il pulsante della prossima mossa si accende solo mezzo battito prima della nota (`hint_beats`).
+
 ## Cosa manca rispetto alla versione HTML
-Da rifare guardando `reference/`:
+Da rifare guardando `reference/codice_originale_aura_battle.html` (cerca i nomi tra parentesi):
+- **Tutorial giocato** (`Tutorial`): 8 passi già scritti in `tutorial` nel JSON, parte al primo PLAY
+- **Condivisione** (`shareResult`): immagine 1080×1350 con piazza, personaggio, voto e punteggio → condivisione del telefono
+- **Telecamera** (`camera(`): avvicinamento lento al ballerino durante il turno, piccolo scatto a ogni mossa, primi piani solo su CLEAN COMBO / nota d'oro / combo 6-9-12
+- **Cielo** (`buildSky`): stelle che brillano a tempo, stelle che si accendono, stelle cadenti
 - schermata VS animata tra i due sfidanti
-- effetti: alone d'aura e scintille, colonna di luce della special, CO2, coriandoli, cerchio luminoso a tempo, zoom della telecamera
+- effetti: alone d'aura e scintille, colonna di luce della special, CO2, coriandoli, cerchio luminoso a tempo
 - voci e cori del pubblico (fischi, "AU-RA!"), effetti sonori
 - modalità Free Style e Aura Challenge, galleria personaggi, impostazioni, filtro notte
 - il rivale che reagisce (ride, si impressiona) e il pubblico che si sposta verso il vincitore
 - grafica dell'interfaccia (font pixel "Press Start 2P", icone delle mosse)
+
+## Privacy
+`privacy.html` (italiano + inglese) è la pagina da indicare negli store. Online è su
+`https://marcocaretti1988-dev.github.io/AURA-BATTLE/web/privacy.html`. Aggiungete un'email di contatto prima della pubblicazione.
 
 ## Pubblicazione
 - **iOS**: Editor → Gestisci modelli di esportazione → scarica i template; Progetto → Esporta → aggiungi *iOS*, inserisci Team ID e Bundle ID, esporta il progetto Xcode e da lì archivia e carica su App Store Connect (serve un Mac e l'account Apple Developer).

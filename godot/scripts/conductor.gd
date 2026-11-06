@@ -42,7 +42,8 @@ func play_bpm(new_bpm: float) -> void:
 func song_time() -> float:
 	if beats.is_empty() or not playing:
 		return Time.get_ticks_msec() / 1000.0 - fallback_t0
-	return get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
+	var lat := GameData.audio_offset if GameData.audio_offset >= 0.0 else AudioServer.get_output_latency()
+	return get_playback_position() + AudioServer.get_time_since_last_mix() - lat
 
 
 func _process(_dt: float) -> void:

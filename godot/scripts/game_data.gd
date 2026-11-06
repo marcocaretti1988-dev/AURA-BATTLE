@@ -21,6 +21,12 @@ var results: Array = []
 var music_on := true
 var sfx_on := true
 var best_score := 0
+var audio_offset := -1.0          # ritardo audio misurato con la calibrazione (secondi), -1 = automatico
+var lang := "it"                  # "it" oppure "en"
+var unlocked_chars: Array = []
+var unlocked_venues: Array = []
+var venue_records: Dictionary = {}  # piazza -> {"score": int, "grade": "S".."D"}
+var tutorial_done := false
 
 
 func _ready() -> void:
@@ -53,15 +59,59 @@ func song_for_venue(v: String) -> String:
 	return s if data["songs"].has(s) else "milano"
 
 
-## --- Tour d'Italia: lista dei rivali e piazza di ogni sfida ---
+## --- traduzione IT -> EN (stesso dizionario del gioco web) ---
+func tr_text(t: String) -> String:
+	if lang == "it":
+		return t
+	var d: Dictionary = data["i18n_en"]
+	if d.has(t):
+		return d[t]
+	var keys: Array = d.keys()
+	keys.sort_custom(func(a, b): return a.length() > b.length())
+	for k in keys:
+		if t.contains(k):
+			t = t.replace(k, d[k])
+	return t
+
+
+## --- progressione: si parte con 3 personaggi e 3 piazze, il resto si sblocca vincendo nel Tour ---
+func has_char(id: String) -> bool:
+	return unlocked_chars.has(id)
+
+func has_venue(id: String) -> bool:
+	return id == "tour" or unlocked_venues.has(id)
+
+func unlock_after_win(opp: String, venue_id: String) -> Array:
+	var news := []
+	if not unlocked_chars.has(opp):
+		unlocked_chars.append(opp)
+		news.append("NUOVO PERSONAGGIO SBLOCCATO: " + character(opp)["name"])
+	if not unlocked_venues.has(venue_id):
+		unlocked_venues.append(venue_id)
+		news.append("NUOVA PIAZZA SBLOCCATA: " + venue(venue_id)["name"])
+	save()
+	return news
+
+func set_record(venue_id: String, score: int, grade: String) -> void:
+	var r: Dictionary = venue_records.get(venue_id, {"score": 0, "grade": "D"})
+	r["score"] = maxi(int(r["score"]), score)
+	if "SABCD".find(grade) < "SABCD".find(String(r["grade"])):
+		r["grade"] = grade
+	venue_records[venue_id] = r
+	save()
+
+
+## --- Tour d'Italia: prima rivali e piazze già sbloccati, poi quelli da conquistare ---
 func start_tour() -> void:
-	opp_list = char_ids.filter(func(c): return c != sel_char)
-	opp_list.shuffle()
+	var others: Array = char_ids.filter(func(c): return c != sel_char)
+	others.shuffle()
+	opp_list = others.filter(func(c): return has_char(c)) + others.filter(func(c): return not has_char(c))
 	opp_list = opp_list.slice(0, int(data.get("rivals", 5)))
 	opp_index = 0
 	results.clear()
-	tour_order = venue_ids.duplicate()
-	tour_order.shuffle()
+	var v: Array = venue_ids.duplicate()
+	v.shuffle()
+	tour_order = v.filter(func(x): return has_venue(x)) + v.filter(func(x): return not has_venue(x))
 
 func current_venue() -> String:
 	if venue_sel != "tour":
@@ -105,6 +155,18 @@ func _load_save() -> void:
 		music_on = c.get_value("game", "music", true)
 		sfx_on = c.get_value("game", "sfx", true)
 		difficulty = c.get_value("game", "difficulty", "normal")
+		audio_offset = c.get_value("game", "audio_offset", -1.0)
+		lang = c.get_value("game", "lang", "it")
+		unlocked_chars = c.get_value("game", "unlocked_chars", [])
+		unlocked_venues = c.get_value("game", "unlocked_venues", [])
+		venue_records = c.get_value("game", "venue_records", {})
+		tutorial_done = c.get_value("game", "tutorial_done", false)
+	else:
+		lang = "it" if OS.get_locale_language() == "it" else "en"
+	if unlocked_chars.is_empty():
+		unlocked_chars = data["start_unlocked"]["characters"].duplicate()
+	if unlocked_venues.is_empty():
+		unlocked_venues = data["start_unlocked"]["venues"].duplicate()
 
 func save() -> void:
 	var c := ConfigFile.new()
@@ -112,6 +174,12 @@ func save() -> void:
 	c.set_value("game", "music", music_on)
 	c.set_value("game", "sfx", sfx_on)
 	c.set_value("game", "difficulty", difficulty)
+	c.set_value("game", "audio_offset", audio_offset)
+	c.set_value("game", "lang", lang)
+	c.set_value("game", "unlocked_chars", unlocked_chars)
+	c.set_value("game", "unlocked_venues", unlocked_venues)
+	c.set_value("game", "venue_records", venue_records)
+	c.set_value("game", "tutorial_done", tutorial_done)
 	c.save(SAVE_PATH)
 
 

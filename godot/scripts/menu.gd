@@ -55,6 +55,9 @@ func _ready() -> void:
 		b.text = c["name"]
 		b.add_theme_color_override("font_color", Color(c["color"]))
 		b.add_theme_font_size_override("font_size", 14)
+		if not GameData.has_char(id):
+			b.disabled = true
+			b.text = c["name"] + "\n" + GameData.tr_text("BLOCCATO")
 		b.pressed.connect(func():
 			_select(id)
 		)
@@ -72,8 +75,10 @@ func _ready() -> void:
 	var i := 1
 	for v in GameData.venue_ids:
 		var vd := GameData.venue(v)
-		venue_btn.add_item("%s - %s" % [vd["name"], vd["city"]])
+		var rec: Dictionary = GameData.venue_records.get(v, {})
+		venue_btn.add_item("%s - %s%s" % [vd["name"], vd["city"], ("   [%s %d]" % [rec["grade"], rec["score"]]) if not rec.is_empty() else ""])
 		venue_btn.set_item_metadata(i, v)
+		venue_btn.set_item_disabled(i, not GameData.has_venue(v))
 		i += 1
 	opts.add_child(venue_btn)
 	diff_btn = OptionButton.new()
@@ -99,6 +104,8 @@ func _ready() -> void:
 
 
 func _select(id: String) -> void:
+	if not GameData.has_char(id):
+		id = GameData.unlocked_chars[0]
 	GameData.sel_char = id
 	for k in cards:
 		cards[k].button_pressed = (k == id)
