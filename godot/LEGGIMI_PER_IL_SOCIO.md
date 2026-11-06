@@ -5,6 +5,8 @@ Il gioco originale è una pagina HTML (Three.js). Godot non può importare l'HTM
 
 > ✅ Provato con **Godot 4.7.2**: il progetto si importa senza errori, il menu e una sfida completa girano (note, punteggio, turno del rivale, round). Nella cartella `tests/` ci sono gli script usati per la prova automatica (`godot --headless -s tests/run_battle.gd`).
 
+> 🖥️ Il progetto usa il renderer **Compatibility (OpenGL)**: con Vulkan/Forward+ sui Mac Intel la grafica si rompe e il gioco va lentissimo. Compatibility è anche la scelta più sicura per i telefoni.
+
 ## Come aprirlo
 1. Godot **4.7** o più recente (versione standard, non .NET).
 2. *Importa* → scegli `project.godot`. Al primo avvio Godot importa i modelli GLB e le immagini (qualche minuto).
