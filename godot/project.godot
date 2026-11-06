@@ -1,11 +1,11 @@
-; Aura Battle - progetto Godot 4.3+ (renderer Mobile)
+; Aura Battle - progetto Godot 4.7 (renderer Compatibility: OpenGL, funziona su tutti i Mac e telefoni)
 config_version=5
 
 [application]
 
 config/name="Aura Battle"
 run/main_scene="res://scenes/menu.tscn"
-config/features=PackedStringArray("4.7", "Mobile")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://assets/ui/icon.png"
 
 [autoload]
@@ -30,5 +30,6 @@ pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
-renderer/rendering_method="mobile"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
