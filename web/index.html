@@ -132,6 +132,8 @@ h2{font-size:15px;margin:4px 0 10px;text-shadow:3px 3px 0 #000;letter-spacing:1p
 .win{color:var(--gold)}.lose{color:#7fb0ff}
 .help{font-size:7px;color:var(--dim);line-height:1.9;text-align:left;margin-top:8px}
 #gallery .gcv{width:min(52vh,280px);aspect-ratio:1/1;image-rendering:pixelated;background:radial-gradient(circle at 50% 70%,rgba(180,76,255,.3),transparent 70%);border:2px solid #3b2a6a;border-radius:8px}
+#sChars{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#sChars .gcv{width:min(46vh,260px)}
 #galWrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
 #galInfo{background:var(--panel);border:2px solid #3b2a6a;border-radius:6px;padding:8px;margin:0 0 8px}
 #galBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;max-width:300px}
@@ -1022,10 +1024,12 @@ class Model3D {
 
 /* galleria personaggi: render 3D con camera prospettica e rotazione lenta */
 const Gal3 = {
-  r: null, scene: null, cam: null,
+  /* la galleria usa lo STESSO renderer 3D del gioco: un secondo contesto WebGL con tutte le
+     texture ricaricate faceva finire la memoria all'iPhone e bloccava il gioco */
+  scene: null, cam: null, g: null,
   init(cv) {
-    if (this.r || !R3.ok) return;
-    this.r = new THREE.WebGLRenderer({ canvas: cv, alpha: true, antialias: true }); this.r.outputEncoding = THREE.sRGBEncoding; this.r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    if (this.scene || !R3.ok) return;
+    this.g = cv.getContext('2d');
     this.scene = new THREE.Scene();
     this.scene.add(new THREE.HemisphereLight(0xdde6ff, 0x3a2a55, 1.2));
     const k = new THREE.DirectionalLight(0xfff1dd, 1.3); k.position.set(-1, 2, 3); this.scene.add(k);
@@ -1033,15 +1037,22 @@ const Gal3 = {
     this.cam = new THREE.PerspectiveCamera(32, 1, .05, 50);
   },
   render(id, t) {
-    const m = R3.models[id]; if (!m || !this.r) return;
-    const cv = this.r.domElement, w = cv.clientWidth || 300, h = cv.clientHeight || 300;
-    this.r.setSize(w, h, false); this.cam.aspect = w / h; this.cam.updateProjectionMatrix();
+    const m = R3.models[id], R = R3.renderer; if (!m || !this.scene || !R) return;
+    const cv = this.g.canvas, src = R3.canvas;
+    const sz = Math.max(64, Math.min(420, src.width, src.height));
+    if (cv.width !== sz) { cv.width = sz; cv.height = sz; }
+    this.cam.aspect = 1; this.cam.updateProjectionMatrix();
     if (m.root.parent !== this.scene) this.scene.add(m.root);
     m.root.visible = true; m.root.scale.setScalar(1.7 / m.h); m.root.position.set(0, -m.minY * 1.7 / m.h, 0);
     m.root.rotation.y = Math.sin(t * .5) * .6; m.setDim(1); m.groundLock(0);
-    const g = CHARS[id].glow; this.rim.color.setRGB(g[0] / 255, g[1] / 255, g[2] / 255);
+    const gl = CHARS[id].glow; this.rim.color.setRGB(gl[0] / 255, gl[1] / 255, gl[2] / 255);
     this.cam.position.set(0, 1.05, 4.6); this.cam.lookAt(0, .88, 0);
-    this.r.render(this.scene, this.cam);
+    // disegna nell'angolo del canvas 3D del gioco e copia il risultato nella galleria
+    const pr = R.getPixelRatio(), oc = R.getClearColor(new THREE.Color()), oa = R.getClearAlpha();
+    R.setScissorTest(true); R.setViewport(0, 0, sz / pr, sz / pr); R.setScissor(0, 0, sz / pr, sz / pr);
+    R.setClearColor(0x1a0e36, 1); R.clear(); R.render(this.scene, this.cam);
+    this.g.clearRect(0, 0, sz, sz); this.g.drawImage(src, 0, src.height - sz, sz, sz, 0, 0, sz, sz);
+    R.setScissorTest(false); R.setViewport(0, 0, src.width / pr, src.height / pr); R.setClearColor(oc, oa);
   }
 };
 
