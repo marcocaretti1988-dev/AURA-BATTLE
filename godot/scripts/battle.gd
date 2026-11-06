@@ -61,7 +61,7 @@ var venue := ""
 var round_i := 0
 var round_wins := [0, 0]
 var turn := "player"
-var phase := "intro"
+var phase := "vs"         # vs -> intro -> perform -> gap -> result -> end
 var timer := 0.0
 var start_beat := 0.0
 var notes: Array = []
@@ -123,7 +123,7 @@ func _build_world() -> void:
 	bg_mat.albedo_texture = load("res://assets/venues/%s.jpg" % venue)
 	bg_plane = MeshInstance3D.new()
 	var q := QuadMesh.new()
-	var h := 2.0 * BG_DIST * tan(deg_to_rad(CAM_FOV / 2.0)) * 1.3
+	var h := 2.0 * BG_DIST * tan(deg_to_rad(CAM_FOV / 2.0)) * 1.7
 	q.size = Vector2(h * 1672.0 / 941.0, h)
 	bg_plane.mesh = q
 	bg_plane.material_override = bg_mat
@@ -203,7 +203,7 @@ func _build_crowd(world: Node3D) -> void:
 		inst.rotation.y = atan2(-spots[i].x, -spots[i].z) + randf_range(-0.2, 0.2)
 		inst.scale = Vector3.ONE * randf_range(0.93, 1.07)
 		# vestiti di colori diversi: tinta leggera e casuale
-		var tint := Color.from_hsv(randf(), randf_range(0.1, 0.35), randf_range(0.8, 1.0))
+		var tint := Color.from_hsv(randf(), randf_range(0.15, 0.45), 1.0) * 1.15
 		for m in inst.find_children("*", "MeshInstance3D", true, false):
 			var mi := m as MeshInstance3D
 			for s in mi.mesh.get_surface_count():
@@ -255,42 +255,41 @@ func _build_ui() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(root)
 	lbl_p = _label(root, 18, HORIZONTAL_ALIGNMENT_LEFT)
-	lbl_p.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	lbl_p.position = Vector2(20, 14)
+	_box(lbl_p, 0, 0, 0, 0, 20, 12, 420, 92)
 	bar_p = ProgressBar.new()
 	bar_p.show_percentage = false
-	bar_p.position = Vector2(20, 96)
-	bar_p.size = Vector2(240, 10)
+	_box(bar_p, 0, 0, 0, 0, 20, 96, 260, 106)
 	root.add_child(bar_p)
 	lbl_o = _label(root, 18, HORIZONTAL_ALIGNMENT_RIGHT)
-	lbl_o.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	lbl_o.position = Vector2(-340, 14)
-	lbl_o.size = Vector2(320, 90)
+	_box(lbl_o, 1, 0, 1, 0, -420, 12, -20, 92)
 	lbl_round = _label(root, 18, HORIZONTAL_ALIGNMENT_CENTER)
-	lbl_round.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	lbl_round.position = Vector2(-250, 12)
-	lbl_round.size = Vector2(500, 80)
+	_box(lbl_round, 0.5, 0, 0.5, 0, -260, 10, 260, 80)
 	lbl_banner = _label(root, 34, HORIZONTAL_ALIGNMENT_CENTER)
-	lbl_banner.set_anchors_preset(Control.PRESET_CENTER)
-	lbl_banner.position = Vector2(-500, -140)
-	lbl_banner.size = Vector2(1000, 60)
+	_box(lbl_banner, 0.5, 0.5, 0.5, 0.5, -560, -170, 560, -110)
+	# console scura sotto la pista (copre anche il fondo della piazza disegnata)
+	var console := Panel.new()
+	var csb := StyleBoxFlat.new()
+	csb.bg_color = Color(0.024, 0.016, 0.07, 0.88)
+	csb.set_corner_radius_all(22)
+	csb.shadow_color = Color(0.024, 0.016, 0.07, 0.6)
+	csb.shadow_size = 24
+	console.add_theme_stylebox_override("panel", csb)
+	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_box(console, 0.5, 1, 0.5, 1, -330, -150, 330, 40)
+	root.add_child(console)
 	# pista Guitar Hero
 	lane = NoteLane.new()
 	lane.battle = self
-	lane.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	lane.position = Vector2(-300, -120)
-	lane.size = Vector2(600, 56)
+	_box(lane, 0.5, 1, 0.5, 1, -300, -120, 300, -64)
 	lane.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(lane)
 	# pulsanti delle mosse: 4 a sinistra, 4 a destra
 	var left := GridContainer.new()
 	left.columns = 2
-	left.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	left.position = Vector2(16, -236)
+	_box(left, 0, 1, 0, 1, 16, -236, 16 + 2 * 130 + 8, -16)
 	var right := GridContainer.new()
 	right.columns = 2
-	right.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	right.position = Vector2(-16 - 2 * 130 - 8, -236)
+	_box(right, 1, 1, 1, 1, -16 - 2 * 130 - 8, -236, -16, -16)
 	for g in [left, right]:
 		g.add_theme_constant_override("h_separation", 8)
 		g.add_theme_constant_override("v_separation", 8)
@@ -321,6 +320,18 @@ func _build_ui() -> void:
 		e[1].add_child(b)
 
 
+## posiziona un controllo con ancore (0..1) e margini in pixel
+func _box(c: Control, al: float, at: float, ar: float, ab: float, l: float, t: float, r: float, b: float) -> void:
+	c.anchor_left = al
+	c.anchor_top = at
+	c.anchor_right = ar
+	c.anchor_bottom = ab
+	c.offset_left = l
+	c.offset_top = t
+	c.offset_right = r
+	c.offset_bottom = b
+
+
 func _label(parent: Control, fs: int, al: HorizontalAlignment) -> Label:
 	var l := Label.new()
 	l.add_theme_font_size_override("font_size", fs)
@@ -345,9 +356,8 @@ func popup(text: String, col: Color, fs := 26) -> void:
 	var l := _label(ui.get_child(0), fs, HORIZONTAL_ALIGNMENT_CENTER)
 	l.text = GameData.tr_text(text)
 	l.add_theme_color_override("font_color", col)
-	l.set_anchors_preset(Control.PRESET_CENTER)
-	l.size = Vector2(600, 40)
-	l.position = Vector2(-300, -60 + randf_range(-10, 10))
+	var oy := -60.0 + randf_range(-10, 10)
+	_box(l, 0.5, 0.5, 0.5, 0.5, -300, oy, 300, oy + 40)
 	var tw := create_tween()
 	tw.tween_property(l, "position:y", l.position.y - 70, 0.9)
 	tw.parallel().tween_property(l, "modulate:a", 0.0, 0.9)
@@ -448,8 +458,7 @@ func _match_end() -> void:
 
 func _show_result(pw: bool) -> void:
 	result_panel = PanelContainer.new()
-	result_panel.set_anchors_preset(Control.PRESET_CENTER)
-	result_panel.position = Vector2(-260, -220)
+	_box(result_panel, 0.5, 0.5, 0.5, 0.5, -260, -220, 260, 220)
 	result_panel.custom_minimum_size = Vector2(520, 440)
 	ui.add_child(result_panel)
 	var vb := VBoxContainer.new()

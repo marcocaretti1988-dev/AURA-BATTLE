@@ -3,10 +3,10 @@
 Questo è il punto di partenza per portare Aura Battle in Godot e pubblicarlo su App Store e Google Play.
 Il gioco originale è una pagina HTML (Three.js). Godot non può importare l'HTML: qui dentro ci sono **tutti i materiali del gioco, già pronti**, e **gli script di base, scritti da zero in GDScript**, che rifanno il cuore della battle.
 
-> ⚠️ Gli script **non sono mai stati aperti in Godot**: sono stati scritti senza poterli eseguire. Aspettati qualche piccolo errore da correggere alla prima apertura (nomi di proprietà, tipi). La logica e i numeri invece sono gli stessi del gioco HTML.
+> ✅ Provato con **Godot 4.7.2**: il progetto si importa senza errori, il menu e una sfida completa girano (note, punteggio, turno del rivale, round). Nella cartella `tests/` ci sono gli script usati per la prova automatica (`godot --headless -s tests/run_battle.gd`).
 
 ## Come aprirlo
-1. Godot **4.3 o più recente** (versione standard, non .NET).
+1. Godot **4.7** o più recente (versione standard, non .NET).
 2. *Importa* → scegli `project.godot`. Al primo avvio Godot importa i modelli GLB e le immagini (qualche minuto).
 3. Premi Play: parte `scenes/menu.tscn`.
 
