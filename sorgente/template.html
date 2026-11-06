@@ -362,6 +362,8 @@ for (const v of VENUE_IDS) if (SONGS[v]) VENUE_SONG[v] = v; // appena una piazza
 const MENU_SONG = 'menu';
 function menuMusic() { Game.wantSong = MENU_SONG; if (!Audio.playSong(MENU_SONG)) Audio.stopMusic(); } // niente musichetta provvisoria: parte subito la canzone del menu appena caricata
 
+/* il tasto della prossima mossa si accende solo mezzo battito prima che la nota entri nel cerchio */
+const HINT_BEATS = .5;
 /* velocità della pista: sale sfida dopo sfida (e in Free Style ogni 10 note prese) */
 const SPEED_STEP = [4, 4, 3, 3, 2, 2], SPEED_AHEAD = [10, 8.5, 8, 7, 6, 5];
 function speedLvl() {
@@ -1844,7 +1846,7 @@ const MoveBar = {
     BAR_MOVES.forEach((m, i) => {
       const cx = x0 + i * (sz + gap) + sz / 2, col = NOTE_COL[m];
       const fl = this.flash[m] != null ? Math.max(0, 1 - (Game.t - this.flash[m]) / .35) : 0, ms = this.miss[m] != null ? Math.max(0, 1 - (Game.t - this.miss[m]) / .4) : 0;
-      const shx = ms ? Math.sin(Game.t * 60) * 2 * ms : 0, isNext = next && (next.m === m || next.m2 === m) && next.beat - b < 1.6;
+      const shx = ms ? Math.sin(Game.t * 60) * 2 * ms : 0, isNext = next && (next.m === m || next.m2 === m) && next.beat - b < HINT_BEATS;
       ctx.fillStyle = 'rgba(6,4,18,.85)'; roundRect(ctx, cx - sz / 2 + shx, ty - sz / 2, sz, sz, 5); ctx.fill();
       const gr = ctx.createLinearGradient(0, ty - sz / 2, 0, ty + sz / 2); gr.addColorStop(0, col + (isNext ? 'ff' : 'b0')); gr.addColorStop(1, col + (isNext ? '99' : '40'));
       ctx.fillStyle = gr; roundRect(ctx, cx - sz / 2 + 2 + shx, ty - sz / 2 + 2, sz - 4, sz - 4, 4); ctx.fill();
@@ -2496,7 +2498,7 @@ function updateHUD() {
     if (bt._off !== off) { bt._off = off; bt.classList.toggle('off', off); }
   });
   setText('comboCh', String(p.charges || 0));
-  const nx = Notes.on ? Notes.list.find(n => n.state === 0 && n.beat > Clock.beat() - .3) : null, near = nx && nx.beat - Clock.beat() < 1.6, nm = near ? nx.m + '|' + (nx.m2 || '') : null;
+  const nx = Notes.on ? Notes.list.find(n => n.state === 0 && n.beat > Clock.beat() - .3) : null, near = nx && nx.beat - Clock.beat() < HINT_BEATS, nm = near ? nx.m + '|' + (nx.m2 || '') : null;
   if (Game._nextBtn !== nm) { document.querySelectorAll('.mv').forEach(b => b.classList.toggle('next', !!near && (b.dataset.m === nx.m || b.dataset.m === nx.m2))); Game._nextBtn = nm; }
 }
 
