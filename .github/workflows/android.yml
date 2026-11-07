@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths: ["godot/**", ".github/workflows/android.yml"]
+permissions:
+  contents: write
 jobs:
   android:
     runs-on: ubuntu-latest
@@ -49,7 +51,12 @@ jobs:
       - name: Export test APK (debug key)
         timeout-minutes: 15
         run: ~/godot --headless --path godot --export-debug "Android APK" build/AuraBattle_test.apk
-      - uses: actions/upload-artifact@v4
-        with:
-          name: aura-battle-android
-          path: godot/build/*
+      - name: Dimensioni
+        run: |
+          ls -la godot/build
+          unzip -l godot/build/AuraBattle_test.apk | sort -k1 -n -r | head -25
+      - name: Pubblica come release (build-android)
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh release delete build-android -y --cleanup-tag || true
+          gh release create build-android godot/build/AuraBattle.aab godot/build/AuraBattle_test.apk --prerelease --title "Build Android ${{ github.run_number }}" --notes "AAB non firmato (da firmare con la chiave di upload) + APK di prova"

@@ -13,11 +13,17 @@ on:
     paths: [".github/workflows/ios.yml"]
 jobs:
   ios:
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     steps:
       - uses: actions/checkout@v4
+      - name: Xcode 26
+        run: |
+          ls -d /Applications/Xcode*.app
+          X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+          xcodebuild -version
       - name: Godot 4.7.2 + export templates
         run: |
           cd ~
@@ -45,7 +51,8 @@ jobs:
         run: |
           cd godot/build/ios
           xcodebuild -project AuraBattle.xcodeproj -scheme AuraBattle -configuration Release -sdk iphoneos \
-            -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build | tail -20
+            -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build > xb.log 2>&1 || { grep -E 'error|Undefined' -A3 xb.log | head -60; exit 1; }
+          tail -5 xb.log
       - name: Archive firmato + upload
         if: env.TEAM_ID != ''
         env:
@@ -61,7 +68,7 @@ jobs:
             -destination 'generic/platform=iOS' -archivePath $RUNNER_TEMP/AuraBattle.xcarchive \
             -allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             DEVELOPMENT_TEAM=$TEAM_ID CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Development" PROVISIONING_PROFILE_SPECIFIER="" \
-            CURRENT_PROJECT_VERSION=$BUILD archive | tail -30
+            CURRENT_PROJECT_VERSION=$BUILD archive > ar.log 2>&1 || { grep -E 'error' -A3 ar.log | head -60; exit 1; }
           DEST=export; [ "${{ inputs.upload }}" = "true" ] && DEST=upload
           cat > $RUNNER_TEMP/opts.plist <<EOT
           <?xml version="1.0" encoding="UTF-8"?>
@@ -75,7 +82,7 @@ jobs:
           EOT
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/AuraBattle.xcarchive -exportOptionsPlist $RUNNER_TEMP/opts.plist \
             -exportPath $RUNNER_TEMP/out -allowProvisioningUpdates \
-            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -30
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
           rm -f "$KEY"
       - uses: actions/upload-artifact@v4
         if: always()
