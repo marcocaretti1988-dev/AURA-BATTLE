@@ -1,0 +1,85 @@
+name: iOS build
+# Con i segreti Apple (APPLE_TEAM_ID, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8) firma e carica su App Store Connect / TestFlight.
+# Senza segreti fa solo una build di prova non firmata, per controllare che compili.
+on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: "Carica su App Store Connect"
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths: [".github/workflows/ios.yml"]
+jobs:
+  ios:
+    runs-on: macos-15
+    env:
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Godot 4.7.2 + export templates
+        run: |
+          cd ~
+          curl -sSLO https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_macos.universal.zip
+          unzip -q Godot_v4.7.2-stable_macos.universal.zip
+          curl -sSLO https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          mkdir -p "$HOME/Library/Application Support/Godot/export_templates/4.7.2.stable" /tmp/tpl
+          unzip -q Godot_v4.7.2-stable_export_templates.tpz -d /tmp/tpl
+          mv /tmp/tpl/templates/* "$HOME/Library/Application Support/Godot/export_templates/4.7.2.stable/"
+          echo "GODOT=$HOME/Godot.app/Contents/MacOS/Godot" >> $GITHUB_ENV
+      - name: Team ID
+        if: env.TEAM_ID != ''
+        run: sed -i '' "s/TEAMID0000/$TEAM_ID/" godot/export_presets.cfg
+      - name: Import
+        timeout-minutes: 20
+        run: $GODOT --headless --path godot --import || true
+      - name: Export Xcode project
+        timeout-minutes: 20
+        run: |
+          mkdir -p godot/build/ios
+          $GODOT --headless --path godot --export-release "iOS" build/ios/AuraBattle.xcodeproj
+          ls godot/build/ios
+      - name: Build di prova (senza firma)
+        if: env.TEAM_ID == ''
+        run: |
+          cd godot/build/ios
+          xcodebuild -project AuraBattle.xcodeproj -scheme AuraBattle -configuration Release -sdk iphoneos \
+            -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build | tail -20
+      - name: Archive firmato + upload
+        if: env.TEAM_ID != ''
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          KEY="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+          printf '%s' "$ASC_KEY_P8" > "$KEY"
+          cd godot/build/ios
+          BUILD=$(( ${{ github.run_number }} + 1 ))
+          xcodebuild -project AuraBattle.xcodeproj -scheme AuraBattle -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath $RUNNER_TEMP/AuraBattle.xcarchive \
+            -allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM=$TEAM_ID CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Development" PROVISIONING_PROFILE_SPECIFIER="" \
+            CURRENT_PROJECT_VERSION=$BUILD archive | tail -30
+          DEST=export; [ "${{ inputs.upload }}" = "true" ] && DEST=upload
+          cat > $RUNNER_TEMP/opts.plist <<EOT
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+          <key>method</key><string>app-store-connect</string>
+          <key>destination</key><string>$DEST</string>
+          <key>teamID</key><string>$TEAM_ID</string>
+          <key>signingStyle</key><string>automatic</string>
+          </dict></plist>
+          EOT
+          xcodebuild -exportArchive -archivePath $RUNNER_TEMP/AuraBattle.xcarchive -exportOptionsPlist $RUNNER_TEMP/opts.plist \
+            -exportPath $RUNNER_TEMP/out -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -30
+          rm -f "$KEY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: aura-battle-ios
+          path: ${{ runner.temp }}/out/*.ipa
+          if-no-files-found: ignore
