@@ -20,7 +20,7 @@ func _ready() -> void:
 	font = load("res://assets/fonts/PressStart2P-Regular.ttf")
 	theme = Theme.new()
 	theme.default_font = font
-	theme.default_font_size = 12
+	theme.default_font_size = 15
 	theme.set_stylebox("normal", "Button", _box(Color(0.12, 0.06, 0.3, 0.92), COL_EDGE))
 	theme.set_stylebox("hover", "Button", _box(Color(0.2, 0.1, 0.42, 0.95), COL_GOLD))
 	theme.set_stylebox("pressed", "Button", _box(Color(0.35, 0.16, 0.6, 1.0), COL_GOLD))
@@ -62,6 +62,13 @@ func _box(bg: Color, edge: Color, bw := 3, r := 10) -> StyleBoxFlat:
 	return s
 
 
+## i testi sono più grandi per lo schermo del telefono
+const FONT_K := 1.3
+
+func fs_k(fs: int) -> int:
+	return int(round(fs * FONT_K))
+
+
 func t(text: String) -> String:
 	return GameData.tr_text(text)
 
@@ -71,7 +78,7 @@ func button(text: String, cb: Callable, gold := false, min_size := Vector2(0, 46
 	var b := Button.new()
 	b.text = t(text)
 	b.custom_minimum_size = min_size
-	b.add_theme_font_size_override("font_size", fs)
+	b.add_theme_font_size_override("font_size", fs_k(fs))
 	if gold:
 		b.add_theme_stylebox_override("normal", _box(Color(0.42, 0.28, 0.05, 0.95), COL_GOLD))
 	b.pressed.connect(func():
@@ -90,7 +97,7 @@ func move_button(move_id: String, label: String) -> Button:
 	b.expand_icon = true
 	b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-	b.add_theme_font_size_override("font_size", 10)
+	b.add_theme_font_size_override("font_size", fs_k(10))
 	b.add_theme_constant_override("icon_max_width", 30)
 	b.add_theme_stylebox_override("normal", _box(Color(col.darkened(0.45), 0.85), col, 3, 14))
 	b.add_theme_stylebox_override("hover", _box(Color(col.darkened(0.3), 0.9), col.lightened(0.3), 3, 14))
@@ -103,7 +110,7 @@ func move_button(move_id: String, label: String) -> Button:
 func label(text: String, fs := 12, col := Color.WHITE, align := HORIZONTAL_ALIGNMENT_CENTER) -> Label:
 	var l := Label.new()
 	l.text = t(text)
-	l.add_theme_font_size_override("font_size", fs)
+	l.add_theme_font_size_override("font_size", fs_k(fs))
 	l.add_theme_color_override("font_color", col)
 	l.horizontal_alignment = align
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE

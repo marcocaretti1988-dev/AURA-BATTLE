@@ -39,14 +39,15 @@ jobs:
           done
           cat ~/.config/godot/editor_settings-4.7.tres
       - name: Import
+        timeout-minutes: 15
         run: ~/godot --headless --path godot --import || true
-      - name: Install Android build template
-        run: ~/godot --headless --path godot --install-android-build-template || true
       - name: Export AAB (unsigned, signed later with upload key)
+        timeout-minutes: 30
         run: |
           mkdir -p godot/build
-          ~/godot --headless --path godot --export-release "Android" build/AuraBattle.aab
+          ~/godot --headless --path godot --install-android-build-template --export-release "Android" build/AuraBattle.aab
       - name: Export test APK (debug key)
+        timeout-minutes: 15
         run: ~/godot --headless --path godot --export-debug "Android APK" build/AuraBattle_test.apk
       - uses: actions/upload-artifact@v4
         with:

@@ -49,6 +49,17 @@ func _clear() -> void:
 	screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(screen)
 	calib = {}
+	# console in basso al centro (come nella battle), su tutte le schermate
+	var console := Panel.new()
+	var csb := StyleBoxFlat.new()
+	csb.bg_color = Color(0.024, 0.016, 0.07, 0.88)
+	csb.set_corner_radius_all(22)
+	csb.shadow_color = Color(0.024, 0.016, 0.07, 0.6)
+	csb.shadow_size = 24
+	console.add_theme_stylebox_override("panel", csb)
+	console.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_box(console, 0.5, 1, 0.5, 1, -330, -190, 330, 40)
+	screen.add_child(console)
 
 
 func _box(c: Control, al: float, at: float, ar: float, ab: float, l: float, t: float, r: float, b: float) -> void:
@@ -142,9 +153,14 @@ func show_main() -> void:
 	for it in items:
 		var b := UI.button(it[0], it[1], it[2], Vector2(195, 50), 11)
 		grid.add_child(b)
-	var rec := UI.label("RECORD: %d" % GameData.best_score, 10, Color(0.75, 0.7, 0.9))
-	_box(rec, 0, 0, 0, 0, 40, 570, 440, 590)
-	screen.add_child(rec)
+	var cv := VBoxContainer.new()
+	cv.alignment = BoxContainer.ALIGNMENT_CENTER
+	cv.add_theme_constant_override("separation", 12)
+	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_box(cv, 0.5, 1, 0.5, 1, -310, -175, 310, -15)
+	screen.add_child(cv)
+	cv.add_child(UI.label(GameData.character(GameData.sel_char)["name"], 18, GameData.color_of(GameData.sel_char)))
+	cv.add_child(UI.label("RECORD: %d" % GameData.best_score, 11, Color(0.85, 0.8, 1.0)))
 
 
 func _play_tour() -> void:
@@ -196,7 +212,7 @@ func show_select(m: String) -> void:
 		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 		b.text = c["name"]
 		b.add_theme_color_override("font_color", Color(c["color"]))
-		b.add_theme_font_size_override("font_size", 9)
+		b.add_theme_font_size_override("font_size", UI.fs_k(9))
 		if not GameData.has_char(id):
 			b.disabled = true
 			b.text = c["name"] + "\n" + UI.t("BLOCCATO")
@@ -315,7 +331,7 @@ func show_settings() -> void:
 		var b := Button.new()
 		b.text = r[1].call()
 		b.custom_minimum_size = Vector2(190, 40)
-		b.add_theme_font_size_override("font_size", 10)
+		b.add_theme_font_size_override("font_size", UI.fs_k(10))
 		var get_txt: Callable = r[1]
 		var act: Callable = r[2]
 		b.pressed.connect(func():
